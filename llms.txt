@@ -1,0 +1,23 @@
+# Brett Goldstein
+
+> Brett Goldstein runs Micro and Launch House Ventures, writes on X, LinkedIn and Homescreen, and makes music as Monte Del Monte.
+
+This is a small personal homepage. The canonical URL is https://brettgoldstein.com/.
+
+## Primary Page
+
+- [Homepage](https://brettgoldstein.com/): Short biographical homepage with links to Brett's companies, writing, music, and contact channels.
+
+## Links
+
+- [Micro](https://micro.com): Company Brett runs.
+- [Launch House Ventures](https://launchhouse.com): Founder-led early-stage fund Brett runs.
+- [X](https://x.com/thatguybg): Brett's X profile and DM channel.
+- [LinkedIn](https://linkedin.com/in/brettgoldstein): Brett's LinkedIn profile and DM channel.
+- [Homescreen](https://homescreen.substack.com): Brett's writing.
+- [Spotify](https://open.spotify.com/artist/montedelmonte): Music by Monte Del Monte.
+
+## Optional
+
+- [Launch video critic example](https://x.com/thatguybg/status/2065138968249651600?s=20): Example of Brett commenting on launch videos.
+- [Video example](https://x.com/thatguybg/status/2062576589875937420?s=20): Example video by Brett.
