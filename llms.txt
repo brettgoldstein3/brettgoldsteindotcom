@@ -7,12 +7,14 @@ This is a small personal homepage. The canonical URL is https://brettgoldstein.c
 ## Primary Page
 
 - [Homepage](https://brettgoldstein.com/): Short biographical homepage with links to Brett's companies, writing, music, and contact channels.
+- [Writing](https://brettgoldstein.com/writing/): Archive for selected longer writing by Brett, mirrored from X and other places on the internet.
 
 ## Links
 
 - [Micro](https://micro.com): Company Brett runs.
 - [Launch House Ventures](https://launchhouse.com): Founder-led early-stage fund Brett runs.
 - [X](https://x.com/thatguybg): Brett's X profile and DM channel.
+- [X Articles](https://x.com/thatguybg/articles): Source list for longer writing that can be mirrored locally.
 - [LinkedIn](https://linkedin.com/in/brettgoldstein): Brett's LinkedIn profile and DM channel.
 - [Homescreen](https://homescreen.substack.com): Brett's writing.
 - [Spotify](https://open.spotify.com/artist/montedelmonte): Music by Monte Del Monte.
