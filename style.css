@@ -287,18 +287,19 @@ ul, ol {
 .tab-labels {
   color: #666666;
   display: flex;
-  gap: 0.55rem;
-  margin-bottom: 1rem;
+  gap: 1.25rem;
+  margin-bottom: 1.15rem;
 }
 
 .tab-labels label {
+  border-bottom: 1px solid transparent;
   cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  padding-bottom: 0.15rem;
 }
 
 #tab-essays:checked ~ .tab-labels label[for="tab-essays"],
 #tab-video-reviews:checked ~ .tab-labels label[for="tab-video-reviews"] {
+  border-color: #222222;
   color: #222222;
   font-weight: 600;
 }
