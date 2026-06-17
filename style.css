@@ -182,7 +182,24 @@ ul, ol {
 }
 
 .article .article-meta {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+}
+
+.article-hero {
+  margin: 1rem 0 2rem;
+}
+
+.article-hero img {
+  border: 1px solid #dddddd;
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.article-hero figcaption {
+  color: #666666;
+  font-size: 0.9rem;
+  margin-top: 0.35rem;
 }
 
 .article-footer {
