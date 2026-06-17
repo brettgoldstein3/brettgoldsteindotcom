@@ -308,3 +308,18 @@ ul, ol {
 .quoted-video iframe {
   max-width: 100% !important;
 }
+
+.review-media {
+  margin: 1.5rem 0 2rem;
+}
+
+.review-media figure {
+  margin-bottom: 1rem;
+}
+
+.review-media img {
+  border: 1px solid #dddddd;
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
