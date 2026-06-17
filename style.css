@@ -220,14 +220,20 @@ ul, ol {
   margin-bottom: 1rem;
 }
 
-.article-media img {
+.article-figure {
+  margin: 1.75rem 0;
+}
+
+.article-media img,
+.article-figure img {
   border: 1px solid #dddddd;
   display: block;
   height: auto;
   max-width: 100%;
 }
 
-.article-media figcaption {
+.article-media figcaption,
+.article-figure figcaption {
   color: #666666;
   font-size: 0.9rem;
   margin-top: 0.35rem;
