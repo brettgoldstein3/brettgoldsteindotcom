@@ -358,6 +358,17 @@ ul, ol {
   margin-bottom: 1rem;
 }
 
+.review-media figcaption,
+.video-note {
+  color: #666666;
+  font-size: 0.9rem;
+  margin-top: 0.45rem;
+}
+
+.video-note {
+  margin-bottom: 0;
+}
+
 .review-media img {
   border: 1px solid #dddddd;
   display: block;
