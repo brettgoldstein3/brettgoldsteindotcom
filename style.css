@@ -260,3 +260,51 @@ ul, ol {
 .article-body ul {
   margin-bottom: 0;
 }
+
+.tabs input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tab-labels {
+  color: #666666;
+  display: flex;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.tab-labels label {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+#tab-essays:checked ~ .tab-labels label[for="tab-essays"],
+#tab-video-reviews:checked ~ .tab-labels label[for="tab-video-reviews"] {
+  color: #222222;
+  font-weight: 600;
+}
+
+.tab-panel {
+  display: none;
+}
+
+#tab-essays:checked ~ .essays-panel,
+#tab-video-reviews:checked ~ .video-reviews-panel {
+  display: block;
+}
+
+.more-link {
+  margin-top: 1rem;
+}
+
+.quoted-video {
+  border-top: 1px solid #dddddd;
+  margin-top: 2rem;
+  padding-top: 1rem;
+}
+
+.quoted-video iframe {
+  max-width: 100% !important;
+}
