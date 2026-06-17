@@ -127,8 +127,8 @@ ul, ol {
 
 .writing-list li {
   display: grid;
-  gap: 0.25rem;
-  margin-bottom: 0.9rem;
+  gap: 0.18rem;
+  margin-bottom: 1.15rem;
 }
 
 .writing-list li:last-child {
@@ -139,11 +139,20 @@ ul, ol {
   width: fit-content;
 }
 
-.writing-list span,
+.writing-list .item-summary {
+  color: #444444;
+}
+
+.writing-list .item-meta,
 .eyebrow,
 .back-link,
 .article-meta {
   color: #666666;
+}
+
+.writing-list .item-summary,
+.writing-list .item-meta {
+  font-size: 0.95rem;
 }
 
 .back-link {
