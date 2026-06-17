@@ -180,6 +180,14 @@ ul, ol {
   margin-top: 0.25rem;
 }
 
+.article-list .item-summary {
+  color: #444444;
+}
+
+.article-list .item-meta {
+  color: #666666;
+}
+
 .article {
   max-width: 720px;
 }
