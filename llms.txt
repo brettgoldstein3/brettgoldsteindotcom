@@ -7,42 +7,14 @@ This is a small personal homepage. The canonical URL is https://brettgoldstein.c
 ## Primary Pages
 
 - [Homepage](https://brettgoldstein.com/): Short biographical homepage with links to Brett's companies, writing, music, and contact channels.
-- [Writing](https://brettgoldstein.com/writing/): Archive for selected longer writing by Brett, mirrored from X.
-
-## Writing
-
-- [bad fundraise announcement video](https://brettgoldstein.com/writing/bad-fundraise-announcement-video/): June 15, 2026.
-- [clever launch video](https://brettgoldstein.com/writing/clever-launch-video/): June 15, 2026.
-- [very good montage video](https://brettgoldstein.com/writing/very-good-montage-video/): June 15, 2026.
-- [we have to stop acting like boomers getting angry about videos like this](https://brettgoldstein.com/writing/we-have-to-stop-acting-like-boomers-getting-angry-about-videos-l/): June 15, 2026.
-- [absolutely perfect ad for knicks fans](https://brettgoldstein.com/writing/absolutely-perfect-ad-for-knicks-fans/): June 14, 2026.
-- [cool technical launch video](https://brettgoldstein.com/writing/cool-technical-launch-video/): June 13, 2026.
-- [beautiful launch video](https://brettgoldstein.com/writing/beautiful-launch-video/): June 11, 2026.
-- [incredible launch video](https://brettgoldstein.com/writing/incredible-launch-video/): June 11, 2026.
-- [cinematic slop launch video](https://brettgoldstein.com/writing/cinematic-slop-launch-video/): June 11, 2026.
-- [one of the best montage videos I've seen](https://brettgoldstein.com/writing/one-of-the-best-montage-videos-i-ve-seen/): June 11, 2026.
-- [one of the best launch videos lately](https://brettgoldstein.com/writing/one-of-the-best-launch-videos-lately/): June 10, 2026.
-- [clean but slow founder announcement video](https://brettgoldstein.com/writing/clean-but-slow-founder-announcement-video/): June 10, 2026.
-- [pretty clean animation-heavy launch video](https://brettgoldstein.com/writing/pretty-clean-animation-heavy-launch-video/): June 9, 2026.
-- [very original launch video](https://brettgoldstein.com/writing/very-original-launch-video/): June 9, 2026.
-- [bad launch video, worse waste of marketing $$](https://brettgoldstein.com/writing/bad-launch-video-worse-waste-of-marketing/): June 9, 2026.
-- [cliche but well-executed launch video](https://brettgoldstein.com/writing/cliche-but-well-executed-launch-video/): June 9, 2026.
-- [self-review of our partnership launch video](https://brettgoldstein.com/writing/self-review-of-our-partnership-launch-video/): June 9, 2026.
-- [beautiful frontier model launch video from anthropic](https://brettgoldstein.com/writing/beautiful-frontier-model-launch-video-from-anthropic/): June 9, 2026.
-- [ok hype reel launch video](https://brettgoldstein.com/writing/ok-hype-reel-launch-video/): June 8, 2026.
-- [pretty good launch advice thread](https://brettgoldstein.com/writing/pretty-good-launch-advice-thread/): June 8, 2026.
-- [this is a masterpiece of tech advertising for anthropic](https://brettgoldstein.com/writing/this-is-a-masterpiece-of-tech-advertising-for-anthropic/): June 6, 2026.
-- [founders fund absolutely mogged on this one](https://brettgoldstein.com/writing/founders-fund-absolutely-mogged-on-this-one/): June 6, 2026.
-- [ok here's my honest self-review of our launch video](https://brettgoldstein.com/writing/ok-here-s-my-honest-self-review-of-our-launch-video/): June 5, 2026.
-- [elite level no-narration launch video](https://brettgoldstein.com/writing/elite-level-no-narration-launch-video/): June 3, 2026.
-- [well executed cinematic launch video](https://brettgoldstein.com/writing/well-executed-cinematic-launch-video/): June 3, 2026.
+- [Writing](https://brettgoldstein.com/writing/): Placeholder archive for selected long-form articles by Brett. Tweets are intentionally not mirrored here.
 
 ## Links
 
 - [Micro](https://micro.com): Company Brett runs.
 - [Launch House Ventures](https://launchhouse.com): Founder-led early-stage fund Brett runs.
 - [X](https://x.com/thatguybg): Brett's X profile and DM channel.
-- [X Articles](https://x.com/thatguybg/articles): Source list for longer writing mirrored locally.
+- [X Articles](https://x.com/thatguybg/articles): Source list for long-form articles only.
 - [LinkedIn](https://linkedin.com/in/brettgoldstein): Brett's LinkedIn profile and DM channel.
 - [Homescreen](https://homescreen.substack.com): Brett's writing.
 - [Spotify](https://open.spotify.com/artist/montedelmonte): Music by Monte Del Monte.
