@@ -12,6 +12,9 @@ This is a small personal homepage. The canonical URL is https://brettgoldstein.c
 
 ## Articles
 
+<!-- content-sync:article:start -->
+- [The Trillion-dollar Super App is Finally Coming](https://brettgoldstein.com/writing/the-trillion-dollar-super-app-is-finally-coming/): June 23, 2026.
+<!-- content-sync:article:end -->
 - [Doubling My Life at 36](https://brettgoldstein.com/writing/doubling-my-life-at-36/): June 5, 2026.
 - [How I vibe coded a $150K landing page](https://brettgoldstein.com/writing/how-i-vibe-coded-a-150k-landing-page/): May 11, 2026.
 - [The Four Micro-Revolutions of the Intelligence Revolution](https://brettgoldstein.com/writing/the-four-micro-revolutions-of-the-intelligence-revolution/): May 5, 2026.
