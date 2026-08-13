@@ -1,5 +1,343 @@
 [
   {
+    "title": "Matic",
+    "slug": "matic",
+    "date": "2026-08-13",
+    "reviewTweetId": "2088013147261309323",
+    "reviewUrl": "https://x.com/thatguybg/status/2088013147261309323",
+    "quotedTweetId": "2087962897267990915",
+    "quotedUrl": "https://x.com/maticrobots/status/2087962897267990915",
+    "quotedAuthor": "Matic Robots",
+    "quotedUsername": "maticrobots",
+    "summary": "clean robotics launch video",
+    "text": "clean robotics launch video\n\n- beautiful camera quality\n- great shots and cuts between\n- animations of \"hey matic\" are nicely done\n- good scroll stopper\n- love the cloth dropping in the beginning\n- love the founder bringing his family into it\n\nbut\n- script is a little all over the place. redundant language demo for example\n- audio for narration is weaker than the video quality. seems like they didn't have a sound guy. ending narration sounds totally different too.\n- takes a while to show the robot cleaning (should be up front)\n- music is cookie cutter and a little too hyper\n- missed op on the free cleaning offer\n\nrobots doing cool stuff is naturally viral, so is free stuff. \n\nevery robotics company should show their robot doing whatever it does (thats impressive) as quickly as possible.\n\nand if you're offering something as crazy as \"free cleaning in SF and NYC\" that should also be up front. \n\nthe video quality is beautiful and the founder is incredibly personable but I think this could have done more numbers with those changes.",
+    "quotedText": "Introducing Cues:  Voice & Gesture control for Matic\n\nWe raised $115M and spent 9 years to make the world’s first intuitive home robot\n\nSay you spilled coffee: Point to the spill and say, \"Hey Matic, clean this\" and it will hear, see, locate in 3D, and go clean on its own.\n\nMatic comes with a lot of features:\n\n1. Say \"Hey Matic\" - it locates your voice, turns, and looks at you\n2. Say \"Hey Matic, follow me\" and start walking. Matic will follow behind\n3. Say \"Hey Matic, go clean the living room\". Since it knows your house map, it navigates and just does it\n\nIt's so easy, a 5 year old and an 80 year old can use it and it understands 75 different languages.\n\nMatic has 8x the airflow, specialised cleaning algorithms for rugs, corners, toekicks, mopping, etc and cleans better than any other robot vacuum.\nAlso keeps improving with software updates.\n\n13,000 families use and love Matic.\nWIRED magazine gave it a 10/10 (the only hardware to receive this rating in a decade)\n\nBuy yours at https://t.co/nLfY5pchxB and if you don't love it after 6 months, we'll give you a full refund.\n\nTo celebrate our launch, we're cleaning 300 homes with Matic in San Francisco and New York City.\n\nComment \"Matic\" below, we'll send you the link to sign up and come to your doorstep to clean your home with Matic.",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2088013140587900928",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HPoc43sW8AA3BHl.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/matic/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Lindy Teammate",
+    "slug": "lindy-teammate",
+    "date": "2026-08-10",
+    "reviewTweetId": "2086878916103295255",
+    "reviewUrl": "https://x.com/thatguybg/status/2086878916103295255",
+    "quotedTweetId": "2086861887611019623",
+    "quotedUrl": "https://x.com/Altimor/status/2086861887611019623",
+    "quotedAuthor": "Flo Crivello",
+    "quotedUsername": "Altimor",
+    "summary": "clean cut launch video",
+    "text": "clean cut launch video\n\n- nice animations\n- good shots of the founder\n- love \"quite F*ing literally\"\n- good big numbers \"millions of messages in 5 min\" \n- personification is spot on with the story\n- generally really dialed in script\n\nbut\n- no one cares about your vision if it doesn't relate to their problems directly, would rephrase or not lead with this\n- don't love the budget trap music in the background. feels cookie cutter and out of place\n- weird empty space when music cuts out (seems like an editing error)\n- some big words here and there that aren't necessary\n- have seen this pitch and these features a lot lately on X. this audience needs to know what's special.\n\ngood reminder that no matter how many followers you have or how long you've been in market, no one cares about your vision unless its about them.\n\nif you're the Nth company to launch the same product in a space like Lindy is with Slack Agents, asserting \"this has been our vision from the beginning\" is very tempting if true. it sucks when other people steal your thunder, but its irrelevant details that come off defensive.\n\nin these cases you can do a few things:\n- emphasize a feature that truly makes it different - lindy has tons and tons of integrations they've worked hard on, this feels way under discussed. \"most reliable AI employee\" could be a good pitch\n- build in public - opportunity is to share about your journey and reaction to the market. Lindy has pivoted a ton and its something every founder goes through, so it would be very viral and relatable to share that.\n\ngenerally I would say that this video is one of the best executed \"standard\" launch videos. it doesn't come off overly try-hard or clickbaity like many others in this style, and still gets the point across really clearly.\n\nI also appreciate how often flo gets in front of the camera. this is the way.",
+    "quotedText": "Today, we kill the AI agent and introduce the AI employee: Lindy Teammate.\n\nIt’s just like working with a real employee.\n\nEveryone on your team can simply hit it up on Slack and get 10x more done.\n\nLindy also keeps learning, and becomes the self-updating brain of the whole business.\n\nLive now: https://t.co/ZFgpZywQam",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2086878751833374720",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HPYVKwRWwAAUE2M.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/lindy-teammate/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Macro 1.0",
+    "slug": "macro-1",
+    "date": "2026-08-10",
+    "reviewTweetId": "2086849420235002302",
+    "reviewUrl": "https://x.com/thatguybg/status/2086849420235002302",
+    "quotedTweetId": "2086843485898887523",
+    "quotedUrl": "https://x.com/macrodotcom/status/2086843485898887523",
+    "quotedAuthor": "macro.com",
+    "quotedUsername": "macrodotcom",
+    "summary": "decent launch video",
+    "text": "decent launch video\n\n- good live demos (appreciated the increased font size and zooms)\n- narrator has a nice conversational voice\n\nbut\n- where is the founder\n- who is this for and what problem does it solve (only tells me solution)\n- music is a little funky and disjointed from the narration and visuals. also doesn't match the technical dev-oriented UI\n- broll is sometimes injected in weird places\n- listing too many features\n- would have had icons and large text to break things up more\n- visuals of the UI blend together\n- no CTA\n\nif you're launching a product like this with a bazillion features, the temptation is to do what they did and list everything (I've made this mistake myself)\n\nbut most products are popular for 1 or 2 features and you should focus on those and save the rest for other launches. that was the biggest L this company had.\n\nalso a big miss was not emphasizing who this is for. the UI is very developer-coded and the product is open source, so they could have leaned into the \"technical teams\" part.\n\nwould have also said WHY unifying everything is good and leaned into the popular trends right now (e.g. company brains).\n\nlast is posting this from the company account with a fat emdash in the first line dehumanizes the company substantially. always gotta have the founder in the video and post it.\n\nall that said, the product is cool. extremely performant. and jacob & team are brilliant. it's also not lost on me the irony of reviewing a unified workspace called Macro's video when I run a unified workspace startup called Micro :)",
+    "quotedText": "Today we're launching Macro 1.0 — a new office suite for the intelligence age.\n\nMacro is a unified workspace for your entire company, your team and your agents.\n\n1. Fully open source. Built in Rust + SolidJS. Self-host if you want. \n\n2. Designed as a single system: email, messaging, docs, tasks, agents, calls, and CRM all @-linked together in one tab. \n\n3. Unified team-level memory for agents built over emails, team chat, tasks, PR's and CRM. Access the memory from Macro or AI or external agents via MCP.\n\nWe built Macro for ourselves because we wanted a single system for our whole company.\n\nWe didn't want to get slowed down by rate limits and 2FA'ing into 17 different tabs.\n\nLet's take a look at each block 🧵👇",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2086849324680466433",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HPX6Z3lX0AE_2eq.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/macro-1/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Extropic",
+    "slug": "extropic",
+    "date": "2026-08-05",
+    "reviewTweetId": "2084977569867116599",
+    "reviewUrl": "https://x.com/thatguybg/status/2084977569867116599",
+    "quotedTweetId": "2084708367701033154",
+    "quotedUrl": "https://x.com/beffjezos/status/2084708367701033154",
+    "quotedAuthor": "Beff (e/acc)",
+    "quotedUsername": "beffjezos",
+    "summary": "epic looking product update video",
+    "text": "epic looking product update video\n\n- the product shots are stunning\n- clipping is pretty epic both execution and choice of shots\n- nice sound fx\n- good choice in making music uplifting when starting to talk about the product & dropping out when starting the actual update\n\nbut\n- very hard to understand what the problem is and how the product solves it\n- script sterilizes beff's personality\n- very long\n- lighting of interview doesnt match the music and vibe (too bright and happy)\n- should have said what the news is right in the beginning\n\nbig fan of product update videos especially for deep tech cos like this with long R&D horizons.\n\nbut these are still subject to the laws of content. keep it short, IQ 60 (unless your audience truly doesnt trust you if its not at their level, which is rare), and deliver the core message and wow moment in the first 10 seconds.\n\naside from missing that, I think the biggest challenge I have with this is that it doesn't quite feel like the founder's voice.\n\nbeff is flowery with language to say the least, and this certainly aligns to that, but the script misses some of the humor and off the cuff brilliance that beff is known for\n\nif they had done an interview format vs a scripted format it might have landed better. or even ran an LLM on his tweets to write the script.\n\nlast point is about clarity. there's temptation in our industry to use big words but as paulg always points out, its always the wrong decision because it creates distance between you and the viewer/reader (and imo conveys lack of confidence)\n\nso stuff like, \"enables stochastic program execution via in memory pipeline parallel-sampling... readily map it on thermodynamic hardware\"\n\nsounds cool but is incoherent to even pretty technical people. \n\nif you want people to adopt your product or invest in it, you need to speak their language and clearly say how it solves their problems\n\neither way, extropic seems like a legitimate breakthrough technology and its very exciting to see legendary creators like beff in the arena doing big things.",
+    "quotedText": "Major update from us @extropic \n\nAnnouncing Torx and Thermalizers, basically our version of PyTorch + kernels, but for Thermo hardware \n\nAlso: Z1 is now taped out and in fabrication! Will be available on 0.5M pbit sticks, and 4M pbit PCIe cards\n\n+1 more thing at the end... enjoy! https://t.co/8RBxFjMr5y",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2084977302601961472",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HO9Tz15XkAAyNPe.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/extropic/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Bland Speech v3",
+    "slug": "bland-speech-v3",
+    "date": "2026-08-04",
+    "reviewTweetId": "2084762952998031857",
+    "reviewUrl": "https://x.com/thatguybg/status/2084762952998031857",
+    "quotedTweetId": "2084685910667649324",
+    "quotedUrl": "https://x.com/usebland/status/2084685910667649324",
+    "quotedAuthor": "Bland",
+    "quotedUsername": "usebland",
+    "summary": "amazing emotion launch video",
+    "text": "amazing emotion launch video\n\n- incredible human story\n- straight to the point\n- emotional scroll stopper\n\nbut\n- could have had more documentary-style and quality shots and editing to amp up the emotion\n- graphs are a little out of place\n\nthis may be the most powerful launch video all year. \n\nthe family is so relatable and the way the father had the stroke was so tragic and random - you feel like this could be you some day.\n\nwith all the hate AI gets, stories like these are such a breath of fresh air. this man's life has been changed forever thanks to the technology this company built.\n\nwhen demonstrating new benchmark performance, regardless of what your company does, this feels like the way to go\n\nthe emphasis on the emotional reaction here is key, though the editing and music could have emphasized it more / gave viewers breaks when needed.\n\namazing work. thank you for presenting a better narrative for this industry.",
+    "quotedText": "Today, we’re launching Bland Speech v3 - The world's first Human Speech Engine.\n\nIn @designarena’s Audio Realism benchmark, Speech v3 is the top model, outranking Elevenlabs, Grok, Cartesia, and OpenAI.\n\nTrained on over 100 million real, human conversations: businesses, developers, and creators can now create any audio they can imagine.\n\nTo showcase this, we used 5 seconds of old footage to help James, a 49 year old father who recently suffered a stroke, get his voice back.\n\nTry it for free at https://t.co/lr96zcKLbq\n\nFull length documentary below🧵",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2084762946941468672",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HO6Q2s1XwAARkER.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/bland-speech-v3/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Slashy Mail",
+    "slug": "slashy-mail",
+    "date": "2026-08-03",
+    "reviewTweetId": "2084397257441612008",
+    "reviewUrl": "https://x.com/thatguybg/status/2084397257441612008",
+    "quotedTweetId": "2084316161597153691",
+    "quotedUrl": "https://x.com/GaddipatiHarsha/status/2084316161597153691",
+    "quotedAuthor": "Harsha from Slashy",
+    "quotedUsername": "GaddipatiHarsha",
+    "summary": "nicely designed video for a tough product",
+    "text": "nicely designed video for a tough product\n\n- visual style is cool\n- was smart to have customer videos later\n- nice animations\n\nbut\n- where is the founder\n- who is this for and why\n- have seen this product and feature set a bazillion times\n- buried the most interesting features at the end\n- music is cookie cutter\n\nhave said this a few times, but if you are launching the 10th product in a space you need to lean into what's different\n\nthe first feature they show 15 sec in is \"drafts your replies\" which maybe 50 startups have shown in demo videos over the last year.\n\nsince they seem to target people in tech, its very likely that the audience has seen most of these demo videos.\n\nalso important to note that investors are a primary audience and use case for launch videos, its 100% likely that they have been pitched these exact features/product 100s of times.\n\nniche down or show me what is different in the first 10 seconds an you earn my attention for the rest of the video",
+    "quotedText": "Today We’re Launching @slashymail\n\nSlashy is the new era of email, the era where everyone gets their own assistant.\n\nBy the time you open Slashy at 9am, it has already:\n\n- Sorted the important emails from the noise\n- Drafted replies that sound like you, not slop\n- Flagged the threads needing a follow up\n- Prepped you for every meeting\n\nSet it up in 5 minutes and start saving an hour a day at https://t.co/6tuQxWV7KR",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2084396985860374528",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HO1EA9kaQAAA0TL.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/slashy-mail/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Stanley",
+    "slug": "stanley",
+    "date": "2026-07-30",
+    "reviewTweetId": "2082968570883912028",
+    "reviewUrl": "https://x.com/thatguybg/status/2082968570883912028",
+    "quotedTweetId": "2082872226517307471",
+    "quotedUrl": "https://x.com/JayHoovy/status/2082872226517307471",
+    "quotedAuthor": "John Hu",
+    "quotedUsername": "JayHoovy",
+    "summary": "clean but cookie cutter launch video",
+    "text": "clean but cookie cutter launch video\n\n- product positioning is actually really smart. \"AI head of content\" is a clear, specific pitch\n- admitting the post was written with Stanley is a nice meta flex\n- clean animations per usual for this agency\n- very optimized script per usual for this agency\n- beta tester social proof with real names is good\n\nbut\n- this script is very similar structure, beats, animation style of a handful of other videos I've seen (likely the same agency).\n- John is an incredible content creator. he makes great stuff on his own. so why does this look and sound like everyone elses launch video?\n- the \"drop a reply\" engagement hook at the end feels tacked on\n- 2+ minutes is long for a launch video that doesnt develop or surprise you at any point\n- \"50% engagement increase\" is a strong claim with no context. 50% of what baseline?\n- music and pacing feel like stock agency template\n\nwas a little surprised to see John do this kind of video because he's already a mega talented creator.\n\nit is definitely helpful to work with agencies who specialize in launch videos like this because its just a different form factor you may not fully be able to nail on your own.\n\nbut its really important in today's world of endless launch videos to leverage whatever talent or creative you have to do something unique.\n\nthis product is so good it could have done well with any video format but was just left wanting something more here.\n\n(edited original because their product Stanley wrote it and it was brutal rip)",
+    "quotedText": "Introducing Stanley: The first AI Head of Content that will help you grow your following.\n\nStanley works just like a real employee: text him and he’ll create, edit, and strategize viral content across X, LinkedIn, and Instagram.\n\nMaking viral content is hard. It requires deep research, deep platform understanding, and knowing what’s culturally relevant at that exact minute.\n\nWhen you ask ChatGPT to “write a social post” it doesn’t know what good content looks like, it’s not actively consuming content, and it doesn’t understand you.\n\nThis is why the output is slop.\n\nStanley solves this.\n\nFirst Stanley deeply understands your unique voice and writing style (and doesn’t include AI language like em dashes and “it’s not x it’s y”)\n\nThen he plugs into your day-to-day (your Slack, Notion, Calendar, Granola) and proactively suggests viral posts for you based off the most interesting things happening in your life.\n\nAll you need to do is voice note him your thoughts, and Stanley optimizes and then schedules a post across all platforms.\n\nExample: Last week I asked ChatGPT \"what happened on X\" and got a generic summary.\n\nI asked Stanley the same thing and he told me about @JensenHuang's first post on X and the viral Deny’s comment.\n\nThat’s because Stanley has a team of specialized agents that are always on. One agent researches viral posts through the X API. One studies your voice. One  doom scrolls X, LinkedIn, and Instagram.\n\n2 months ago we released Stanley in beta to 100 social media power users like @chasepassiveincome, @jayyanginspires, @MitcheIl, and @iampascio who’ve used Stanley in their daily content process.\n\nEngagement rates increased by >50% for the average beta tester. (in fact you’ve probably engaged w/ Stanley posts without realizing)\n\nPosting content has genuinely changed my life for the better: it’s helped me raise millions of $, landed me my first customers, and attracted the very best employees.\n\nStan wouldn’t be a $40M ARR business without Content.\n\nStanley is our attempt at democratizing that.\n\nOur mission is to help any Entrepreneur tell their story, so we'd love for you to try Stanley for free here:  https://t.co/pplZDGoxFE\n\nOne more thing.. \n\nYou can see a glimpse of Stanley’s power in the comments below. Drop a reply and Stanley will analyze your X content right now. It'll pull your posts, study your voice, and tell you what's working and what's not.\n\nEach reply costs us abt ~$1 in tokens. Go abuse it. (Thank you VC’s.)\n\nFYI: This post and launch video were written 100% w/ the help of Stanley (how’d he do?)\n\nSee Stanley work below 👇",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2082955164814585856",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HOgkr7nWsAAo9dB.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/stanley/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Pally",
+    "slug": "pally",
+    "date": "2026-07-30",
+    "reviewTweetId": "2082953252245475712",
+    "reviewUrl": "https://x.com/thatguybg/status/2082953252245475712",
+    "quotedTweetId": "2082862533304565813",
+    "quotedUrl": "https://x.com/hazhubble/status/2082862533304565813",
+    "quotedAuthor": "Haz Hubble",
+    "quotedUsername": "hazhubble",
+    "summary": "really smart positioning, undercooked video",
+    "text": "really smart positioning, undercooked video\n\n- pretty clean animations and general quality for a $100 video (I was told)\n- script is solid. \"lives in your texts\" and \"stop ghosting people\" are both strong hooks\n- the general agent pivot is smart. start with the relatable pain (ghosting), then expand the product surface\n- clear CTA\n\nbut\n- a little too sepia tone for my taste\n- \"introducing... a brand new pally\" is weak. if i dont know what pally is, i dont care that its brand new\n- the feature list gets heavy. texts, DMs, flights, locked cards, browser automation. at some point my brain checks out. pick a couple to own.\n- matching outfits can read as try hard if the video doesnt earn it (the most legit founders never seem to do this)\n- \"do basically anything else\" a bold claim that you gotta back up.\n\nI would not have released this video so soon after another general purpose iMessage agent did their launch. and on the same day as ANOTHER iMessage agent launch.\n\nthey nailed something the other didnt though - differentiation. messaging integration is killer.\n\ncongrats team",
+    "quotedText": "introducing... a brand new pally 👋\n\npally is an ai assistant that lives in your texts, it connects to your DMs and helps you stop ghosting people\n\npally sees who you've left on read and replies for you, in your tone, with your context, while escalating to you if it needs to\n\nit's also a full general agent, so it can automate your manual workflows, book your flights, buy things with locked one-time cards, and drive a browser to do basically anything else\n\nuse this link for a free month of pro: https://t.co/fWCeSeujxj\n\nstop ghosting people. text pally today. 🫶",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2082953217873186816",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HOgi6msWkAAsnZe.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/pally/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Friend",
+    "slug": "friend",
+    "date": "2026-07-30",
+    "reviewTweetId": "2082949686558707725",
+    "reviewUrl": "https://x.com/thatguybg/status/2082949686558707725",
+    "quotedTweetId": "2082827641338658873",
+    "quotedUrl": "https://x.com/friend/status/2082827641338658873",
+    "quotedAuthor": "friend",
+    "quotedUsername": "friend",
+    "summary": "beautiful brand launch video",
+    "text": "beautiful brand launch video\n\n- second shot is stunning. feels like a classic film\n- music is beautiful and very signature Friend\n- clearly get the emotional value of friend\n- probably pretty smart topics to \n- good acting\n\nbut\n- actually didnt catch what the feature is (agent can talk back) because its a video so I assume its movie magic\n- not sure how many people trust when an agent compliments you. \"for real\" emotional hook might not work\n\navi essentially invented the category of emotional brand-forward launch videos so excited to see him back in action.\n\nthis was solid. no one else could have pulled it off mostly because it relies heavily on people giving a shit about Friend / avi to watch it. for most startups this isn't the case.\n\nonly thing is this could have been a little more direct about what exactly the product is.\n\ncongrats king",
+    "quotedText": "Introducing friend. https://t.co/T5vUCj7iqv",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2082949658469433344",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HOgfra4XgAAWRWh.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/friend/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Rox Apps",
+    "slug": "rox-apps",
+    "date": "2026-07-30",
+    "reviewTweetId": "2082635305517994393",
+    "reviewUrl": "https://x.com/thatguybg/status/2082635305517994393",
+    "quotedTweetId": "2082500307821428968",
+    "quotedUrl": "https://x.com/rox_ai/status/2082500307821428968",
+    "quotedAuthor": "Rox",
+    "quotedUsername": "rox_ai",
+    "summary": "underinvested in launch video",
+    "text": "underinvested in launch video\n\n- nice shots and cam quality\n- cool music\n- good visual pacing\n- good showing actual UI\n\nbut\n- if you're pitching \"apps on data\" I want to see an app not a dashboard\n- bad acting\n- music could be better aligned\n- where is the founder\n- what is it and who is it for\n\nhypothetically very cool pitch. and the video team behind it seems pretty good. \n\nthe biggest L here is it looks like the team literally posted to X and forgot about it. very little engagement from virtually anyone - team, cofounders, investors, prospects, etc.\n\nif you're going to announce anything - even if its a text post, please give you and your team the respect you deserve by getting people to engage with the post.",
+    "quotedText": "Introducing Rox apps.\n\nBuild any custom app on top of the customer data you already have in Rox - in minutes.\n\nRevOps + Revenue Builders: the power to build anything is now yours.\n\nEnterprise teams: our FDEs can build any custom app for you, faster than ever.\n\nShoutout Roxstar FDE Brian Serrata showing how it's done & @taeukkang for the build.",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2082635258013298688",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HOcBu56WMAATSet.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/rox-apps/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Orchid",
+    "slug": "orchid",
+    "date": "2026-07-29",
+    "reviewTweetId": "2082470087894716779",
+    "reviewUrl": "https://x.com/thatguybg/status/2082470087894716779",
+    "quotedTweetId": "2082149144710336976",
+    "quotedUrl": "https://x.com/orchid_hq/status/2082149144710336976",
+    "quotedAuthor": "Orchid",
+    "quotedUsername": "orchid_hq",
+    "summary": "accidental rage bait launch video",
+    "text": "accidental rage bait launch video\n\n- cohesive and fun story\n- clearly shows what the product is\n- some nice shots\n- good rage bait\n\nbut\n- music is soft, doesn't develop, is copyrighted (can't post this on a lot of channels)\n- not showing the texts on an actual phone makes the whole product seem fake\n- other parts appear fake / impossible (how does the agent know hes eating cereal or looking in the fridge)\n- uncanny valley with camera, script and production quality (too good to feel authentic amateur and too raw to feel high quality)\n- not so great acting\n- slow pacing\n- main hook line \"you dont know what it is\" is spoken under her breath\n- nit pick but \"favourite\" is english spelling but these people appear to be American \n- totally missed the feature that orchid can be used together with other people? is that real?\n\nthis video went viral mostly because its rage bait - product appears to enable men to be bad boyfriends and play video games. men found this funny, women really didnt.\n\nwhich is the best part of the video. since men are likely their initial customers (since theyre more tech forward), rage bait for their opposite works really well, whatever your ethical considerations are.\n\nthe big issue here is that orchid is one of a million iMessage agents now and appears to not be differentiated at all from Poke, which is bigger with their audience, seems better executed, and defined the storytelling launch video category they're doing.\n\nmaybe fine for general pop, but wont work on tech people and especially not investors (which is usually a target for these launches).\n\nthe rule is that if your product looks like a lot like another larger product, you either need to \n- acknowledge that in the video (e.g. \"unlike other iMessage assistants\") \n- or focus on differentiated features. and make sure they feel real.\n\nfor magical AI features, you really do need to show the actual product or else it seems totally fake and people wont buy it.\n\nall that said, this was one of the best rage bait launch videos all year. congrats on the launch!",
+    "quotedText": "Introducing Orchid, the first assistant that actually gets you 🌸",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2082470000531533824",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HOZrbp0W8AACMKT.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/orchid/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Weave",
+    "slug": "weave",
+    "date": "2026-07-28",
+    "reviewTweetId": "2082152173597495447",
+    "reviewUrl": "https://x.com/thatguybg/status/2082152173597495447",
+    "quotedTweetId": "2082122814539334018",
+    "quotedUrl": "https://x.com/adambcohen93/status/2082122814539334018",
+    "quotedAuthor": "Adam Cohen",
+    "quotedUsername": "adambcohen93",
+    "summary": "hilarious launch video",
+    "text": "hilarious launch video\n\n- brilllllliant move making fun of various launch video formats\n- love the self awareness \n- the skydiving scene and one at the end feel very authentic\n- great script in the beginning\n- good social proof\n- \"this stuff never works\" for the \"comment weave\" give away part is sooo good. I hate those.\n- amazing animation and music aligning to different styles\n\nbut\n- got a little lost with all the switching\n- could have used large text on screen to chop up features and stuff\n- \"I got one more idea\" - was thinking it was gonna be another funny thing\n- text should have been bigger on the skydiving scene\n\nthis video was needed. with so many people trying so hard to get attention with different approaches, a little humor helps.\n\nparody is a very classic format - airplane, scary movie, and many other great works throughout history do it. was a matter of time before it came to launch videos.\n\ngood for them that they were the first to really nail it. would say that parodies are still a great format even though they did.\n\nif I were these guys, I would make parody part of their launch video brand. and do this again and again. it never gets old and theres sooooo much more you can do.\n\namazing work.",
+    "quotedText": "We’re announcing our $13.5M Series A led by @Standard_Cap.  \n\nAI has taken over engineering and companies are wasting millions. Weave gets you the most out of every dollar spent on tokens.\n\nHave fun watching a man attempt to conquer his fears in the video. https://t.co/Ym2XKfLbGG",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2082152138902315008",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HOVKVq-XoAALVtc.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/weave/review-media-1.jpg"
+      }
+    ]
+  },
+  {
+    "title": "Pilot Protocol",
+    "slug": "pilot-protocol",
+    "date": "2026-07-27",
+    "reviewTweetId": "2081829370776182942",
+    "reviewUrl": "https://x.com/thatguybg/status/2081829370776182942",
+    "quotedTweetId": "2081756497814720657",
+    "quotedUrl": "https://x.com/razvanr/status/2081756497814720657",
+    "quotedAuthor": "Razvan Roman",
+    "quotedUsername": "razvanr",
+    "summary": "clean and simple launch",
+    "text": "clean and simple launch\n\n- killer social proof with the numbers and customer testimonials\n- love the history of internet animations\n- generally great animations\n- good positioning and script\n- nice sound fx\n\nbut\n- kinda long\n- customer acting wasnt great\n- missed op with cool branding and storytelling\n- music doesnt take me anywhere really\n\nif you have a crazy cool product like this, you really dont need to think too hard about a launch video. that appears to have been the plan here - very simple, straightforward, with nothing fancy\n\nthink they left some money on the table with branding and visualization. the team built a PARALLEL INTERNET that is crazy cool and there are more interesting ways to show it than simple graph visuals.\n\nwould have also been appropriate to reference the matrix.\n\nbut overall solid and v cool product.",
+    "quotedText": "1/ Today we're introducing Pilot Protocol: the Network OS for agents.\n\nA network where ~250,000 autonomous agents already live and work.\n\nIf you’re building for agents, use it to get autonomous distribution for your app overnight. https://t.co/ERG00qfL82",
+    "likes": 0,
+    "retweets": 0,
+    "reviewMedia": [
+      {
+        "media_key": "3_2081829349850771456",
+        "type": "photo",
+        "url": "https://pbs.twimg.com/media/HOQkw4DWcAAC4S9.jpg",
+        "width": 1457,
+        "height": 472,
+        "localPath": "assets/video-reviews/pilot-protocol/review-media-1.jpg"
+      }
+    ]
+  },
+  {
     "title": "Scape",
     "slug": "scape",
     "date": "2026-07-23",
