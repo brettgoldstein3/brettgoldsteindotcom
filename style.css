@@ -365,3 +365,17 @@ ul, ol {
   height: auto;
   max-width: 100%;
 }
+
+/* Semantic page headings retain the site's compact typography. */
+.intro-heading,
+.archive-heading {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: inherit;
+  margin-bottom: 0.5rem;
+}
+
+.intro-heading:last-child,
+.archive-heading:last-child {
+  margin-bottom: 0;
+}
