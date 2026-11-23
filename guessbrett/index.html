@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guess Brett? A guessing game with 26 different people named Brett Goldstein. One of them runs this website.">
+  <link rel="canonical" href="https://brettgoldstein.com/guessbrett/">
+  <meta property="og:title" content="Guess Brett? — Brett Goldstein">
+  <meta property="og:description" content="A guessing game with 26 different people named Brett Goldstein. One of them runs this website.">
+  <meta property="og:site_name" content="Brett Goldstein">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://brettgoldstein.com/guessbrett/">
+  <meta property="og:image" content="https://brettgoldstein.com/assets/bretts/logo.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Guess Brett? — Brett Goldstein">
+  <meta name="twitter:description" content="A guessing game with 26 different people named Brett Goldstein. One of them runs this website.">
+  <title>Guess Brett? — Brett Goldstein</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../style.css?v=15">
+  <style>
+    main { max-width: 900px; }
+    .logo { margin: 0 auto 0.25rem; max-width: 420px; font-family: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", "Helvetica Neue", Arial, sans-serif; }
+    .logo img { display: block; width: 100%; height: auto; filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.25)); }
+
+    .status {
+      border: 1px solid #222222;
+      background: #ffffff;
+      padding: 0.9rem 1rem;
+      min-height: 5.2rem;
+      position: sticky;
+      top: 0.75rem;
+      z-index: 5;
+    }
+    .status .answer { font-weight: 600; }
+    .status .tally { color: #666666; font-size: 0.9rem; margin-top: 0.35rem; }
+    .status.won { background: #222222; color: #fafafa; }
+    .status.won .tally { color: #bbbbbb; }
+    .status .profile { display: block; margin-top: 0.5rem; color: #ffe512; }
+    .status .profile[hidden] { display: none; }
+    .status button {
+      margin-top: 0.6rem;
+      font: inherit;
+      padding: 0.3rem 0.7rem;
+      border: 1px solid #fafafa;
+      background: #fafafa;
+      color: #222222;
+      cursor: pointer;
+    }
+
+    .questions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: calc(0.75rem - 3px) -3px 0; padding: 3px; overflow: hidden; }
+    .more {
+      font: inherit; font-size: 0.9rem;
+      margin-top: 0.3rem; padding: 0.2rem 0;
+      border: 0; background: none;
+      color: #444444; text-decoration: underline; text-underline-offset: 2px;
+      cursor: pointer;
+    }
+    .more:hover { color: #000000; }
+    .more:focus-visible { outline: 2px solid #222222; outline-offset: 2px; }
+    .questions button {
+      font: inherit;
+      font-size: 0.9rem;
+      text-align: left;
+      padding: 0.3rem 0.6rem;
+      border: 1px solid #bbbbbb;
+      background: #ffffff;
+      color: #222222;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .questions button:hover:not(:disabled) { border-color: #222222; background: #f0f0f0; }
+    .questions button:disabled { color: #aaaaaa; border-color: #e2e2e2; text-decoration: line-through; cursor: default; }
+    .questions button:focus-visible, .tile:focus-visible, .status button:focus-visible { outline: 2px solid #222222; outline-offset: 2px; }
+
+    .table {
+      position: relative;
+      margin-top: 0.75rem;
+      border-radius: 14px;
+      background: linear-gradient(#8f867b, #6a6259);
+      perspective: 9000px;
+      perspective-origin: 50% 30%;
+      overflow: hidden;
+    }
+    /* film grain, then key light and vignette, laid over the whole photograph */
+    .table::before, .table::after {
+      content: "";
+      position: absolute; inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .table::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: 0.22;
+    }
+    .table::after {
+      background:
+        radial-gradient(70% 55% at 30% 34%, rgba(255, 240, 210, 0.2), rgba(255, 240, 210, 0) 70%),
+        radial-gradient(130% 105% at 50% 48%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, 0.55) 100%);
+    }
+    .surface {
+      position: relative;
+      padding: 40px 26px 80px;
+      transform-style: preserve-3d;
+      transform-origin: 50% 100%;
+      transform: rotateX(72deg);
+    }
+    .surface::before {
+      content: "";
+      position: absolute;
+      inset: -1100px -1000px -420px;
+      background:
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.42) 0 2px, rgba(0, 0, 0, 0) 2px 238px),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='w' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75 0.009' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.30  0 0 0 0 0.17  0 0 0 0 0.07  1.5 0 0 0 -0.42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E"),
+        linear-gradient(90deg, #b98652, #c4935e 30%, #b07c49 62%, #c08d58);
+      transform: translateZ(-1px);
+    }
+    .tray {
+      position: relative;
+      transform: translateZ(56px);
+      transform-style: preserve-3d;
+      background:
+        linear-gradient(104deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0.16) 50%, rgba(255, 255, 255, 0) 61%),
+        linear-gradient(180deg, #0fa697, #22d1c2);
+      border-radius: 22px;
+      padding: 0.7rem;
+      box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.5), inset 0 -3px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+    }
+    .tray::before {
+      content: "";
+      position: absolute;
+      inset: -4px -10px -14px -4px;
+      border-radius: 30px;
+      background: rgba(20, 10, 0, 0.62);
+      filter: blur(15px);
+      transform: translate3d(8px, 14px, -55px);
+    }
+    .wall { position: absolute; background: linear-gradient(#12b0a2, #0a7a70); }
+    .wall-f {
+      left: 16px; right: 16px; top: 100%; height: 56px;
+      transform-origin: 50% 0; transform: rotateX(-90deg);
+      display: flex; align-items: center; justify-content: center;
+      color: #ffe512; font-style: normal; font-weight: 600; font-size: 1.15rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      text-shadow: 2px 2px 0 #111111;
+    }
+    .wall-l { left: 0; top: 16px; bottom: 16px; width: 56px; transform-origin: 0 50%; transform: rotateY(90deg); background: linear-gradient(90deg, #12b0a2, #0a7a70); }
+    .wall-r { right: 0; top: 16px; bottom: 16px; width: 56px; transform-origin: 100% 50%; transform: rotateY(-90deg); background: linear-gradient(270deg, #12b0a2, #0a7a70); }
+    .tray-foot {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-height: 200px;
+      padding-bottom: 0.6rem;
+      transform-style: preserve-3d;
+    }
+    .mystery {
+      width: 118px; height: 156px; flex: none;
+      transform-style: preserve-3d;
+      transform-origin: 50% 100%;
+      transform: translateZ(3px) rotateX(-84deg);
+    }
+    .mystery-inner {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(.4,.1,.3,1);
+    }
+    .mystery.revealed .mystery-inner { transform: rotateY(180deg); }
+    .mystery-face {
+      position: absolute; inset: 0;
+      border-radius: 10px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      text-shadow: none;
+    }
+    .mystery-back {
+      background:
+        linear-gradient(115deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 30%),
+        repeating-linear-gradient(45deg, #ff2e93 0 9px, #ff5aa9 9px 18px);
+      border: 5px solid #ffe512;
+      box-shadow: inset 0 0 0 2px #111111;
+      color: #ffe512;
+      -webkit-text-stroke: 2px #111111;
+      text-shadow: 3px 3px 0 #111111;
+      font-size: 3.4rem;
+      font-weight: 900;
+    }
+    .mystery-front {
+      border: 5px solid #ffe512;
+      box-shadow: inset 0 0 0 2px #111111, 0 0 0 1px #111111;
+      transform: rotateY(180deg);
+      align-items: stretch;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0 0.35rem;
+      --step: 140px;
+      transform-style: preserve-3d;
+    }
+    .slot {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      height: 224px;
+      transform: translateZ(calc(var(--tier, 0) * var(--step)));
+      background: linear-gradient(180deg, #075c54, #0a7a70);
+      border-radius: 10px;
+      box-shadow: inset 0 5px 12px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.3);
+      transform-style: preserve-3d;
+    }
+    /* the vertical face of each bleacher step */
+    .riser {
+      position: absolute;
+      left: -0.175rem; right: -0.175rem; top: 100%;
+      height: var(--step);
+      transform-origin: 50% 0;
+      transform: rotateX(-90deg);
+      background: linear-gradient(#1fcabb, #0e9486);
+      box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.25);
+    }
+    .slot::before {
+      content: "";
+      position: absolute;
+      left: 5%; right: 5%; bottom: 4px;
+      height: 62%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+      filter: blur(5px);
+      transition: opacity 0.4s ease;
+    }
+    .slot.down::before { opacity: 0; }
+    .slot::after {
+      content: "";
+      position: absolute;
+      left: -1px; right: -1px; bottom: -4px;
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(#fff48a, #ffe512 45%, #c7a900);
+      transform: translateZ(4px);
+    }
+    .tile {
+      font: inherit;
+      color: inherit;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      min-width: 0;
+      height: 204px;
+      transform-style: preserve-3d;
+      padding: 0;
+      border: 4px solid #ffe512;
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 2px #111111, 0 0 0 1px #111111;
+      cursor: pointer;
+      text-align: center;
+      transform-origin: 50% 100%;
+      transform: translateZ(3px) rotateX(-84deg);
+      transition: transform 0.5s cubic-bezier(.55,.02,.85,.5), box-shadow 0.15s ease;
+    }
+    /* back plate: gives the card visible thickness from the side */
+    .tile::before {
+      content: "";
+      position: absolute; inset: -5px;
+      border-radius: 10px;
+      background: #b39700;
+      transform: translateZ(-5px);
+    }
+    .tile::after {
+      content: "";
+      position: absolute; inset: 0;
+      border-radius: 5px;
+      transform: translateZ(1px);
+      transition: background-color 0.5s ease;
+      background: linear-gradient(115deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 26%, rgba(255, 255, 255, 0) 72%, rgba(255, 255, 255, 0.2) 100%);
+      pointer-events: none;
+    }
+    .tile:hover:not(.down) { box-shadow: inset 0 0 0 2px #111111, 0 0 0 1px #111111, 0 0 0 4px #ffffff; }
+    /* card face: full colour, a white box for the text, location along the bottom */
+    .card {
+      --c: #ffe512;
+      --shirt: color-mix(in srgb, var(--c) 42%, #1d1d1d);
+      background: linear-gradient(165deg, color-mix(in srgb, var(--c) 78%, #ffffff), var(--c) 55%, color-mix(in srgb, var(--c) 88%, #000000));
+      color: #222222;
+      text-align: center;
+    }
+    .card .art { flex: 1; min-height: 0; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+    .card .art svg { display: block; height: 100%; width: auto; max-width: 100%; }
+    .card .art .photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
+    .card .info { display: flex; flex-direction: column; justify-content: center; flex: none; height: 90px; overflow: hidden; background: #ffffff; margin: 0 5px 6px 4px; padding: 2px 1px; border: 2px solid #111111; border-radius: 5px; box-shadow: 2px 2px 0 #111111; }
+    .card .name { display: block; font-weight: 600; font-size: 0.78rem; line-height: 1.2; }
+    .card .role { display: block; color: #444444; font-size: 0.66rem; line-height: 1.25; margin-top: 2px; }
+    .card .loc {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.56rem; font-weight: 600; line-height: 1.2;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      color: #111111;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .tile.down { transform: translateZ(3px) rotateX(0deg); cursor: default; }
+    .tile.down::after { background-color: rgba(18, 48, 46, 0.5); }
+    .tile.it { border-color: #ff2e93; }
+
+    .roster ul { list-style: none; margin-top: 0.75rem; columns: 2; column-gap: 2rem; font-size: 0.9rem; }
+    .roster li { break-inside: avoid; margin-bottom: 0.35rem; }
+    .roster .where { color: #666666; }
+    .fine { color: #666666; font-size: 0.9rem; }
+
+    @media (max-width: 640px) {
+      .board { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 0.4rem; --step: 128px; }
+      .riser { left: -0.2rem; right: -0.2rem; }
+      .wall-f { font-size: 0.85rem; }
+      .surface { padding: 30px 12px 60px; }
+      .tray { padding: 0.5rem; border-radius: 16px; }
+      .slot { height: 206px; }
+      .tile { height: 188px; border-width: 4px; }
+      .card .info { height: 88px; }
+      .card .name { font-size: 0.68rem; }
+      .card .role { font-size: 0.52rem; }
+      .card .loc { font-size: 0.48rem; letter-spacing: 0.03em; }
+      .mystery { width: 100px; height: 136px; }
+      .tray-foot { min-height: 170px; }
+      .status { top: 0.4rem; }
+      .roster ul { columns: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tile, .mystery-inner, .slot::before { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../">&larr; Home</a>
+
+    <section>
+      <h1 class="logo">
+        <img src="../assets/bretts/logo.png" alt="Guess Brett?" width="1200" height="600">
+      </h1>
+    </section>
+
+    <section>
+      <div class="status" id="status" role="status" aria-live="polite" hidden>
+        <div class="answer" id="answer"></div>
+        <div class="tally" id="tally"></div>
+        <a class="profile" id="profile" target="_blank" rel="noopener" hidden>See the real one &rarr;</a>
+        <button id="again" type="button" hidden>Play again</button>
+      </div>
+      <div class="questions" id="questions" aria-label="Questions"></div>
+      <button class="more" id="more" type="button" aria-expanded="false" aria-controls="questions" hidden>More</button>
+    </section>
+
+    <section>
+      <div class="table" id="table">
+        <div class="surface" id="surface">
+        <div class="tray" id="tray">
+          <i class="wall wall-f">Mystery Brett</i><i class="wall wall-l"></i><i class="wall wall-r"></i>
+          <div class="board" id="board" aria-label="Board of Brett Goldsteins"></div>
+          <div class="tray-foot">
+            <div class="mystery" id="mystery" aria-hidden="true">
+              <div class="mystery-inner">
+                <div class="mystery-face mystery-back">?</div>
+                <div class="mystery-face mystery-front card" id="mysteryFront"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <details class="roster">
+        <summary>The real Bretts</summary>
+        <ul id="roster"></ul>
+      </details>
+    </section>
+
+    <section class="writing">
+      <p class="fine">Are you a Brett? <a href="https://x.com/thatguybg" target="_blank" rel="noopener">DM me</a>.</p>
+    </section>
+  </main>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // f: face spec [hair, hairShade, beard, glasses, brows, mouth]
+    var BRETTS = [
+      { id: 'actor', role: "Actor. Roy Kent.", loc: "London", url: "https://en.wikipedia.org/wiki/Brett_Goldstein", photo: '../assets/bretts/brett-goldstein-actor-white-house-2023.jpg', f: ['short', 0, 'full', 0, 'angry', 'flat'],
+        a: { emmy: 1, showbiz: 1, abroad: 1, wiki: 1, offline: 1 },
+        wrong: "No. He's here, he's there, he's not the Brett I'm thinking of.",
+        win: 'The one you were probably looking for when you found this website.' },
+      { id: 'gov', role: "Pentagon's top nerd.", loc: "Chicago", url: "https://www.linkedin.com/in/brettgoldstein", photo: '../assets/bretts/brett-goldstein-pentagon-dds-2019.jpg', pos: '34% 20%', f: ['bald', 1, 'stubble', 1, 'flat', 'smirk'],
+        a: { defense: 1, founder: 1, tech: 1, brisket: 1 },
+        wrong: 'No. And asking again may be a national security matter.',
+        win: "First municipal chief data officer in America, then the Pentagon. Smokes a brisket." },
+      { id: 'me', role: "Made this site.", loc: "San Francisco", url: "https://www.linkedin.com/in/bgoldstein3", photo: '../assets/bretts/brett-goldstein-me.jpg', pos: '50% 30%', f: ['part', 0, 'stubble', 0, 'raised', 'smile'],
+        a: { me: 1, founder: 1, tech: 1, ca: 1 },
+        wrong: '',
+        win: "It was me. It's always me. This is my website." },
+      { id: 'cfa', role: "Allocates assets.", loc: "Boston", url: "https://www.linkedin.com/in/brett-goldstein-cfa-488a4218b", f: ['short', 1, 'none', 0, 'flat', 'flat'],
+        a: { finance: 1 },
+        wrong: 'No. He has rebalanced away from this conversation.',
+        win: 'A diversified portfolio of one Brett.' },
+      { id: 'casting', role: "1990s casting director.", loc: "Unknown", url: "https://www.imdb.com/name/nm0326172/", f: ['long', 2, 'none', 1, 'raised', 'smirk'],
+        a: { showbiz: 1, offline: 1 },
+        wrong: "No. Thank you for coming in. We'll be in touch.",
+        win: 'He cast Sleepers and G.I. Jane. You got the part.' },
+      { id: 'hedge', role: "Sells to hedge funds.", loc: "San Francisco", url: "https://www.linkedin.com/in/goldsteinbrett", f: ['part', 2, 'none', 0, 'flat', 'smile'],
+        a: { finance: 1, ca: 1 },
+        wrong: 'No, but he would love fifteen minutes on your calendar.',
+        win: 'He is circling back to you as we speak.' },
+      { id: 'wealth1', role: "Manages wealth.", loc: "New York", url: "https://www.linkedin.com/in/brettgoldsteinrj", f: ['short', 0, 'none', 0, 'flat', 'smile'],
+        a: { finance: 1, ny: 1 },
+        wrong: "No. That's the other wealth manager. Understandable.",
+        win: 'The wealth manager. No, the other one. No. Yes, him.' },
+      { id: 'wealth2', role: "Also manages wealth.", loc: "Long Island", url: "https://www.linkedin.com/in/brettigoldstein", f: ['short', 0, 'none', 1, 'flat', 'smile'],
+        a: { finance: 1, ny: 1 },
+        wrong: "No. That's the other other wealth manager.",
+        win: 'The other wealth manager. They have presumably met.' },
+      { id: 'sportsdata', role: "Sports data strategist.", loc: "New York", url: "https://www.linkedin.com/in/brettgoldstein1", f: ['spiky', 0, 'stubble', 0, 'flat', 'smirk'],
+        a: { sports: 1, ny: 1 },
+        wrong: 'No. The data did not support that guess.',
+        win: 'Statistically, it was always going to be him.' },
+      { id: 'chiro', role: "Sports chiropractor.", loc: "Florida", url: "https://www.linkedin.com/in/dr-brett-a-goldstein-8903bb28", f: ['short', 2, 'none', 0, 'raised', 'smile'],
+        a: { doctor: 1, sports: 1, founder: 1, fl: 1 },
+        wrong: 'No. But you are sitting badly. He can tell from here.',
+        win: 'Dr. Brett Goldstein will see you now.' },
+      { id: 'phd', role: "Social science Ph.D.", loc: "Upstate NY", url: "https://www.linkedin.com/in/brett-thomas-goldstein", f: ['curly', 1, 'full', 1, 'raised', 'flat'],
+        a: { doctor: 1, ny: 1 },
+        wrong: 'No. Further research is needed.',
+        win: 'Peer reviewed and confirmed: Brett Goldstein.' },
+      { id: 'analytics', role: "Commercial effectiveness.", loc: "Washington DC", url: "https://www.linkedin.com/in/brettwgoldstein", f: ['part', 1, 'none', 1, 'flat', 'flat'],
+        a: {},
+        wrong: 'No. That was not commercially effective.',
+        win: 'Nobody knows what commercial effectiveness is, but he is doing it.' },
+      { id: 'denver', role: "Founder.", loc: "Denver", url: "https://www.linkedin.com/in/brett-goldstein-1885a122", f: ['spiky', 2, 'full', 0, 'raised', 'smile'],
+        a: { founder: 1 },
+        wrong: 'No. He is a mile above this sort of thing.',
+        win: 'A founder named Brett Goldstein who is not me. Suspicious.' },
+      { id: 'tgi', role: "Finance director.", loc: "Brooklyn", url: "https://www.linkedin.com/in/brett-goldstein-682244a", f: ['bald', 0, 'mustache', 1, 'flat', 'flat'],
+        a: { finance: 1, ny: 1 },
+        wrong: 'No. That guess has not been approved.',
+        win: 'Approved, signed, and filed under B.' },
+      { id: 'k401', role: "401(k) governance.", loc: "Long Island", url: "https://www.linkedin.com/in/brettgoldstein401k", f: ['short', 1, 'none', 1, 'flat', 'smile'],
+        a: { finance: 1, ny: 1 },
+        wrong: 'No. And your plan documents are out of date.',
+        win: 'Fully vested in being Brett Goldstein.' },
+      { id: 'pe', role: "Elementary PE teacher.", loc: "Long Island", url: "https://www.linkedin.com/in/brett-goldstein-4334716a", f: ['cap', 0, 'none', 0, 'flat', 'smile'],
+        a: { sports: 1, ny: 1 },
+        wrong: 'No. Take a lap.',
+        win: 'Mr. Goldstein. Everybody line up.' },
+      { id: 'it', role: "IT support.", loc: "St. Louis", url: "https://www.linkedin.com/in/brett-goldstein", f: ['curly', 0, 'stubble', 1, 'flat', 'flat'],
+        a: { tech: 1 },
+        wrong: 'No. Have you tried guessing it off and on again?',
+        win: 'Ticket closed. Resolution: Brett Goldstein.' },
+      { id: 'toast', role: "Restaurant software.", loc: "Philadelphia", url: "https://www.linkedin.com/in/brettsgoldstein", f: ['part', 0, 'none', 0, 'raised', 'smile'],
+        a: { tech: 1 },
+        wrong: 'No. Would you like to hear about the specials anyway?',
+        win: 'A toast. To Brett Goldstein.' },
+      { id: 'coach', role: "Coach and energy healer.", loc: "San Diego", url: "https://www.linkedin.com/in/brett-goldstein-35995345", f: ['long', 2, 'stubble', 0, 'raised', 'smile'],
+        a: { ca: 1 },
+        wrong: 'No. He senses you already knew that.',
+        win: 'His energy was pointing at himself the whole time.' },
+      { id: 'mortgage', role: "Mortgage broker.", loc: "Chicagoland", url: "https://www.linkedin.com/in/brett-goldstein-046a67155", f: ['short', 2, 'mustache', 0, 'flat', 'smile'],
+        a: { finance: 1 },
+        wrong: 'No. You have not been pre-approved for that guess.',
+        win: 'Locked in at a great rate: one Brett.' },
+      { id: 'aus', role: "Broker and recruiter.", loc: "Australia", url: "https://www.linkedin.com/in/brett-goldstein-6500a82b", f: ['spiky', 2, 'none', 0, 'raised', 'smile'],
+        a: { finance: 1, founder: 1, abroad: 1 },
+        wrong: 'No, mate.',
+        win: 'The only Brett Goldstein who is upside down.' },
+      { id: 'syseng', role: "Systems engineer.", loc: "Florida", url: "https://www.linkedin.com/in/brett-goldstein-29560469", f: ['short', 0, 'full', 1, 'flat', 'flat'],
+        a: { tech: 1, fl: 1 },
+        wrong: 'No. Working as intended.',
+        win: 'All systems nominal. All systems Brett.' },
+      { id: 'lax', role: "Lacrosse defenseman.", loc: "Detroit", url: "https://detroittitans.com/roster.aspx?rp_id=7350", f: ['cap', 2, 'none', 0, 'angry', 'flat'],
+        a: { sports: 1, offline: 1 },
+        wrong: 'No. Shot blocked.',
+        win: 'The youngest Brett on the board, and the only one who could check you.' },
+      { id: 'manager', role: "Manager of something.", loc: "New York", url: "https://www.linkedin.com/in/brett-goldstein-24005019", f: ['short', 1, 'none', 0, 'flat', 'flat'],
+        a: { ny: 1 },
+        wrong: 'No. He will need that in writing.',
+        win: 'His profile just says "Manager." We respect the mystery.' },
+      { id: 'connection', role: "\"Real-life connection.\"", loc: "New York", url: "https://www.linkedin.com/in/brett-goldstein-67899418a", f: ['part', 2, 'stubble', 0, 'raised', 'smile'],
+        a: { ny: 1, tech: 1 },
+        wrong: 'No, but he feels you two really connected.',
+        win: 'You found a real connection, in real life.' },
+      { id: 'paper', role: "Published one paper.", loc: "Unknown", f: ['bald', 1, 'full', 1, 'flat', 'flat'],
+        a: { offline: 1 },
+        wrong: 'No. See Goldstein (2022), the only citation available.',
+        win: 'One paper, seven citations, one Brett.' }
+    ];
+
+    var QUESTIONS = [
+      { k: 'name', q: 'Is his name Brett Goldstein?', test: function () { return true; },
+        yes: 'That narrows it down to everyone.' },
+      { k: 'finance', q: 'Does he work in finance?',
+        yes: 'Like a third of all Brett Goldsteins.', no: 'One of the few.' },
+      { k: 'ny', q: 'Is he in New York?',
+        yes: 'Naturally.', no: 'He got out.' },
+      { k: 'tech', q: 'Does he work in tech?',
+        yes: 'He has opinions about AI.', no: 'He is spared.' },
+      { k: 'founder', q: 'Has he founded something?',
+        yes: 'He will tell you about it.', no: 'He has a normal job.' },
+      { k: 'sports', q: 'Does he work in sports?',
+        yes: 'Hustle.', no: 'Not professionally.' },
+      { k: 'ca', q: 'Is he in California?',
+        yes: 'He has a take on the weather.', no: 'He pays less rent.' },
+      { k: 'fl', q: 'Is he in Florida?',
+        yes: 'Florida Brett.', no: 'Not a Florida Brett.' },
+      { k: 'showbiz', q: 'Is he in show business?',
+        yes: 'Lights, camera, Brett.', no: 'He watches it like the rest of us.' },
+      { k: 'doctor', q: 'Do people call him Doctor?',
+        yes: 'Not that kind of doctor, possibly.', no: 'Just Brett.' },
+      { k: 'abroad', q: 'Does he live outside the United States?',
+        yes: 'An international Brett.', no: 'A domestic Brett.' },
+      { k: 'offline', q: 'Is he missing from LinkedIn?',
+        yes: 'He is free.', no: 'He would like to add you to his professional network.' },
+      { k: 'wiki', q: 'Does he have a Wikipedia page?',
+        yes: 'There is only one of those.', no: 'Wikipedia has room for exactly one Brett Goldstein.' },
+      { k: 'emmy', q: 'Has he won an Emmy?',
+        yes: 'Two, actually.', no: 'Not yet.' },
+      { k: 'defense', q: 'Did he report to the Secretary of Defense?',
+        yes: 'That is a real thing a Brett Goldstein did.', no: 'His clearance is regular.' },
+      { k: 'brisket', q: 'Is brisket smoking one of his research interests?',
+        yes: 'It is listed on his website, next to national security.', no: 'His research interests are brisket-free.' },
+      { k: 'me', q: 'Is this his website?',
+        yes: 'You could have just asked that first.', no: 'This is someone else\'s website. Mine.' }
+    ];
+
+    var INK = ['#2a2320', '#7a5637', '#d1ac6a'];
+    var COLORS = ['#ffe512'];
+    var HAIR = {
+      short: '<path d="M21 34Q20 14 40 14Q60 14 59 34Q56 24 40 23Q24 24 21 34Z"/>',
+      part: '<path d="M21 36Q18 13 42 13Q62 14 59 36Q57 26 48 24Q34 30 21 36Z"/>',
+      spiky: '<path d="M21 33L24 16L29 24L33 12L38 22L42 10L46 22L51 12L54 24L58 16L59 33Q40 21 21 33Z"/>',
+      curly: '<circle cx="24" cy="25" r="6"/><circle cx="31" cy="19" r="6"/><circle cx="40" cy="16" r="6.5"/><circle cx="49" cy="19" r="6"/><circle cx="56" cy="25" r="6"/>',
+      cap: '<path d="M20 31Q21 12 40 12Q59 12 60 31Z"/><path d="M57 27L74 31L60 34Z"/>',
+      bald: '',
+      long: '<path d="M21 34Q20 14 40 14Q60 14 59 34Q56 24 40 23Q24 24 21 34Z"/>'
+    };
+    var MOUTH = {
+      smile: 'M34 52Q40 57 46 52', flat: 'M35 53L45 53', smirk: 'M35 53Q42 55 46 50'
+    };
+    var BROWS = {
+      flat: 'M29 31L37 31M43 31L51 31', angry: 'M29 28L37 32M51 28L43 32', raised: 'M29 31Q33 27 37 30M43 30Q47 27 51 31'
+    };
+
+    function face(f) {
+      var hair = f[0], shade = INK[f[1]], beard = f[2], glasses = f[3], onBeard = beard === 'full';
+      var s = '<svg viewBox="0 0 80 80" aria-hidden="true" fill="none" stroke="#222222" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">';
+      if (hair === 'long') s += '<path d="M19 34Q16 11 40 11Q64 11 61 34L63 62L17 62Z" fill="' + shade + '" stroke="none"/>';
+      s += '<path d="M12 80Q13 65 40 65Q67 65 68 80Z" style="fill:var(--shirt)"/>';
+      s += '<ellipse cx="40" cy="38" rx="19" ry="23" fill="#fff4e6"/>';
+      if (beard === 'full') s += '<path d="M22 43Q22 62 40 63Q58 62 58 43Q55 51 48 51Q40 48 32 51Q25 51 22 43Z" fill="' + shade + '" stroke="none"/>';
+      if (beard === 'stubble') s += '<path d="M22 43Q22 62 40 63Q58 62 58 43Q55 51 48 51Q40 48 32 51Q25 51 22 43Z" fill="' + shade + '" stroke="none" opacity="0.22"/>';
+      if (beard === 'mustache') s += '<path d="M31 50Q36 45 40 48Q44 45 49 50Q44 51 40 50Q36 51 31 50Z" fill="' + shade + '" stroke="none"/>';
+      s += '<g fill="' + shade + '" stroke="none">' + HAIR[hair] + '</g>';
+      s += '<circle cx="33" cy="37" r="1.7" fill="#222222" stroke="none"/><circle cx="47" cy="37" r="1.7" fill="#222222" stroke="none"/>';
+      if (glasses) s += '<circle cx="33" cy="37" r="5.5"/><circle cx="47" cy="37" r="5.5"/><path d="M38.5 37L41.5 37M27.5 37L22 35M52.5 37L58 35"/>';
+      s += '<path d="' + BROWS[f[4]] + '"/>';
+      s += '<path d="M40 40L38.5 45L41 45"/>';
+      s += '<path d="' + MOUTH[f[5]] + '" transform="translate(0 ' + (beard === 'mustache' ? 3 : 0) + ')"' + (onBeard ? ' stroke="#ffffff"' : '') + '/>';
+      return s + '</svg>';
+    }
+
+    function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+    function card(b) {
+      var art = b.photo
+        ? '<img class="photo" src="' + b.photo + '" alt=""' + (b.pos ? ' style="object-position:' + b.pos + '"' : '') + '>'
+        : face(b.f);
+      return '<span class="art">' + art + '</span>' +
+        '<span class="info"><span class="name">Brett Goldstein</span><span class="role">' + esc(b.role) + '</span>' +
+        '<span class="loc">' + esc(b.loc) + '</span></span>';
+    }
+
+    var board = document.getElementById('board');
+    var qBox = document.getElementById('questions');
+    var status = document.getElementById('status');
+    var answer = document.getElementById('answer');
+    var tally = document.getElementById('tally');
+    var again = document.getElementById('again');
+    var profile = document.getElementById('profile');
+    var mystery = document.getElementById('mystery');
+    var mysteryFront = document.getElementById('mysteryFront');
+    var games = 0, secret, asked, misses, over;
+
+    function has(b, q) { return q.test ? q.test(b) : !!b.a[q.k]; }
+    function up() { return BRETTS.filter(function (b) { return !b.down; }); }
+    function plural(n) { return n === 1 ? '1 Brett' : n + ' Bretts'; }
+
+    function say(text) {
+      status.hidden = false;
+      answer.textContent = text;
+      var n = up().length;
+      tally.textContent = over
+        ? asked + (asked === 1 ? ' question, ' : ' questions, ') + misses + (misses === 1 ? ' wrong guess.' : ' wrong guesses.') +
+          (asked + misses <= 1 ? ' That ties the world record.' : ' The world record is 1.')
+        : plural(n) + ' standing. ' + asked + (asked === 1 ? ' question asked.' : ' questions asked.');
+    }
+
+    function flip(b) {
+      b.down = true;
+      b.el.classList.add('down');
+      b.el.parentNode.classList.add('down');
+      b.el.disabled = true;
+    }
+
+    function win() {
+      over = true;
+      BRETTS.forEach(function (b) { if (b !== secret && !b.down) flip(b); });
+      secret.el.classList.add('it');
+      mysteryFront.innerHTML = card(secret);
+      mysteryFront.style.setProperty('--c', secret.color);
+      mystery.classList.add('revealed');
+      status.classList.add('won');
+      Array.prototype.forEach.call(qBox.children, function (el) { el.disabled = true; });
+      again.hidden = false;
+      profile.hidden = !secret.url;
+      if (secret.url) profile.href = secret.url;
+      again.textContent = secret.id === 'me' ? 'Play again (fine, a different Brett)' : 'Play again';
+      say((secret.id === 'me' ? '' : "It's Brett Goldstein! ") + secret.win);
+    }
+
+    function ask(q, el) {
+      if (over) return;
+      el.disabled = true;
+      asked++;
+      var yes = has(secret, q), gone = 0;
+      up().forEach(function (b) { if (has(b, q) !== yes) { flip(b); gone++; } });
+      var left = up().length;
+      if (left === 1) return win();
+      var tail = gone === 0 ? ' Nobody flipped.' : ' ' + plural(gone) + ' down.';
+      if (asked === QUESTIONS.length) tail += ' Out of questions. Point at a Brett.';
+      say((yes ? 'Yes. ' : 'No. ') + (yes ? q.yes : q.no) + tail);
+    }
+
+    function accuse(b) {
+      if (over || b.down) return;
+      if (b === secret) return win();
+      misses++;
+      flip(b);
+      if (up().length === 1) return win();
+      say(b.wrong);
+    }
+
+    function start() {
+      games++;
+      over = false; asked = 0; misses = 0;
+      var pool = BRETTS.filter(function (b) { return b.id !== 'me'; });
+      secret = games === 1 ? BRETTS[2] : pool[Math.floor(Math.random() * pool.length)];
+      status.classList.remove('won');
+      mystery.classList.remove('revealed');
+      again.hidden = true;
+      profile.hidden = true;
+      BRETTS.forEach(function (b) {
+        b.down = false;
+        b.el.classList.remove('down', 'it');
+        b.el.parentNode.classList.remove('down');
+        b.el.disabled = false;
+      });
+      Array.prototype.forEach.call(qBox.children, function (el) { el.disabled = false; });
+      status.hidden = true;
+    }
+
+    BRETTS.forEach(function (b, n) {
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'tile card';
+      b.color = COLORS[n % COLORS.length];
+      el.style.setProperty('--c', b.color);
+      el.setAttribute('aria-label', 'Guess Brett Goldstein: ' + b.role + ' ' + b.loc);
+      el.innerHTML = card(b);
+      el.addEventListener('click', function () { accuse(b); });
+      b.el = el;
+      var slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.appendChild(el);
+      slot.appendChild(document.createElement('i')).className = 'riser';
+      board.appendChild(slot);
+    });
+
+    var roster = document.getElementById('roster');
+    BRETTS.forEach(function (b) {
+      var li = document.createElement('li');
+      var label = esc(b.role.replace(/\.$/, ''));
+      li.innerHTML = (b.url ? '<a href="' + b.url + '" target="_blank" rel="noopener">' + label + '</a>' : label) +
+        ' <span class="where">' + esc(b.loc) + '</span>';
+      roster.appendChild(li);
+    });
+
+    QUESTIONS.forEach(function (q) {
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.textContent = q.q;
+      el.addEventListener('click', function () { ask(q, el); });
+      qBox.appendChild(el);
+    });
+
+    // The scene is tilted in 3D, so it is shorter on screen than in layout.
+    // Pull it up so the photo hugs the board, leaving room for the back row of standing cards.
+    var table = document.getElementById('table');
+    var surface = document.getElementById('surface');
+    var tray = document.getElementById('tray');
+    function fit() {
+      var narrow = window.innerWidth <= 640, cols = narrow ? 3 : 6, rows = Math.ceil(BRETTS.length / cols), m = 0;
+      // back rows sit on higher steps
+      BRETTS.forEach(function (b, i) { b.el.parentNode.style.setProperty('--tier', rows - Math.floor(i / cols)); });
+      surface.style.marginTop = '0px';
+      for (var i = 0; i < 7; i++) {
+        m -= BRETTS[0].el.getBoundingClientRect().top - (table.getBoundingClientRect().top + 40);
+        surface.style.marginTop = m + 'px';
+      }
+    }
+    window.addEventListener('resize', fit);
+
+    // Show two lines of questions, with the rest behind "More".
+    var more = document.getElementById('more'), expanded = false;
+    function clamp() {
+      var kids = qBox.children, first = kids[0].offsetTop, rows = [], cut = 0;
+      for (var i = 0; i < kids.length && !cut; i++) {
+        var t = kids[i].offsetTop;
+        if (rows.indexOf(t) < 0) rows.push(t);
+        if (rows.length === 3) cut = t - first;
+      }
+      more.hidden = !cut;
+      more.textContent = expanded ? 'Less' : 'More';
+      more.setAttribute('aria-expanded', expanded);
+      var gap = parseFloat(getComputedStyle(qBox).rowGap) || 0;
+      qBox.style.maxHeight = cut && !expanded ? (cut - gap + 6) + 'px' : 'none';
+      for (var j = 0; j < kids.length; j++) kids[j].tabIndex = cut && !expanded && kids[j].offsetTop - first >= cut ? -1 : 0;
+    }
+    more.addEventListener('click', function () { expanded = !expanded; clamp(); });
+    window.addEventListener('resize', clamp);
+    clamp();
+
+    again.addEventListener('click', start);
+    start();
+    fit();
+  })();
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "076f8fc39fa743d79db3e3c47cc0ab3f"}'></script>
+</body>
+</html>

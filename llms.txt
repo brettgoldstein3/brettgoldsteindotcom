@@ -28,6 +28,6 @@ This is a small personal homepage. The canonical URL is https://brettgoldstein.c
 - [X](https://x.com/thatguybg): Brett's X profile and DM channel.
 - [X Articles](https://x.com/thatguybg/articles): Source list for long-form articles.
 - [Launch Video Reviews](https://brettgoldstein.com/reviews/): Static archive of Brett's review-style quote tweets about launch videos.
-- [LinkedIn](https://linkedin.com/in/brettgoldstein): Brett's LinkedIn profile and DM channel.
+- [LinkedIn](https://linkedin.com/in/bgoldstein3): Brett's LinkedIn profile and DM channel.
 - [Homescreen](https://homescreen.substack.com): Brett's writing.
 - [Spotify](https://open.spotify.com/artist/montedelmonte): Music by Monte Del Monte.
