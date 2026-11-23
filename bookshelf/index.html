@@ -795,7 +795,10 @@
           const book = down.book;
           if (reading) { if (book !== reading) closeRead(); }
           else if (book && book.index !== active) setActive(book.index);
-          else if (book) openRead();          // on touch there's no hover, so a tap opens it straight away
+          // Touch has no hover, so a tap on the front book shows its buttons instead.
+          else if (book && down.type === 'touch') showActions = !showActions;
+          else if (book) openRead();
+          else showActions = false;           // tap on empty space hides them
         }
         down = null;
       });
