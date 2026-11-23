@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Books — Brett Goldstein</title>
+  <meta name="description" content="Brett Goldstein's birthday reflections, one for each year, bound as books.">
+  <link rel="canonical" href="https://brettgoldstein.com/book/">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overscroll-behavior: none; }
+    body {
+      background: #0b0a09;
+      color: #efe6d2;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    #stage { position: fixed; inset: 0; }
+    #stage canvas {
+      display: block; width: 100%; height: 100%;
+      touch-action: none;
+      opacity: 0; transition: opacity 0.9s ease;
+    }
+    #stage canvas.ready { opacity: 1; }
+    #stage canvas.hover { cursor: pointer; }
+    #stage canvas.reading { cursor: grab; }
+    #stage canvas.dragging { cursor: grabbing; }
+    /* Flat covers: shown only if the 3D shelf can't start (no WebGL, or an error). */
+    #flat {
+      position: fixed; inset: 4rem 1.4rem;
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      justify-content: center; align-content: center;
+      transition: opacity 0.6s ease;
+    }
+    #flat img { height: 26vh; width: auto; max-width: 40vw; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); }
+    #flat.hidden { opacity: 0; pointer-events: none; }
+    /* Shown while the shelf is being built */
+    #loading {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.45;
+      transition: opacity 0.4s ease;
+    }
+    #loading.done { opacity: 0; }
+    .bar {
+      position: fixed; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 1.1rem 1.4rem;
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+      pointer-events: none;
+    }
+    .bar a, .bar button { color: inherit; text-decoration: none; pointer-events: auto; }
+    .bar a:hover, .bar button:hover { text-decoration: underline; }
+    .bar button {
+      background: none; border: 0; cursor: pointer;
+      font: inherit; letter-spacing: inherit; text-transform: inherit;
+    }
+    .top { top: 0; }
+    .bottom { bottom: 0; transition: opacity 0.3s ease; }
+    body.reading .bottom { opacity: 0; }
+    .dim { opacity: 0.55; }
+    h1 {
+      font-family: Fraunces, Georgia, serif; font-weight: 500;
+      font-size: 0.95rem; letter-spacing: 0; text-transform: none;
+    }
+    /* Titles run along the top; the front-facing book's title is centred and lit. */
+    #titles {
+      position: fixed; top: 2.6rem; left: 0; right: 0;
+      overflow: hidden; pointer-events: none;
+      opacity: 0; transition: opacity 0.5s ease;
+    }
+    #titles.ready { opacity: 1; }
+    #titles.ready.away { opacity: 0; }
+    #titles .track {
+      display: flex; gap: clamp(1.6rem, 4vw, 3.4rem); width: max-content;
+      transition: transform 0.7s cubic-bezier(0.22, 0.8, 0.24, 1);
+    }
+    #titles .t {
+      background: none; border: 0; padding: 0; cursor: pointer; pointer-events: auto;
+      color: inherit; white-space: nowrap;
+      font-family: Fraunces, Georgia, serif; font-weight: 400; letter-spacing: -0.02em;
+      font-size: clamp(1.7rem, 4.6vw, 4.2rem); line-height: 1.1;
+      opacity: 0.32; transition: opacity 0.5s ease;
+    }
+    #titles .t.on { opacity: 1; }
+    #titles .t:hover { opacity: 0.7; }
+    #titles .t.on:hover { opacity: 1; }
+    #titles sup {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.7rem; letter-spacing: 0.08em; vertical-align: top;
+      margin-left: 0.4em; position: relative; top: 0.5em;
+    }
+    /* Buttons over the front-facing cover */
+    #actions {
+      position: fixed; left: 0; top: 0;
+      display: flex; gap: 0.7rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    #actions.show { opacity: 1; pointer-events: auto; }
+    #actions button, #actions a {
+      background: rgba(8, 7, 6, 0.9); color: #f3ead8; border: 0; border-radius: 999px;
+      padding: 0.75rem 1.25rem; cursor: pointer; text-decoration: none; white-space: nowrap;
+      font: 500 1rem/1 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    #actions button:hover, #actions a:hover { background: #f3ead8; color: #0b0a09; }
+    /* The post beside a book that's being read */
+    #panel {
+      position: fixed; top: 0; bottom: 0; right: 0; width: 48vw;
+      padding: 14vh 2.4rem 4rem 0.5rem;
+      overflow-y: auto;
+      opacity: 0; pointer-events: none;
+    }
+    #panel.open { pointer-events: auto; }
+    @media (max-width: 600px) {
+      #actions button, #actions a { padding: 0.65rem 1rem; font-size: 0.9rem; }
+    }
+    #panel .inner { max-width: 33rem; font-family: Fraunces, Georgia, serif; }
+    #panel .note { font-size: 4.2rem; font-weight: 400; line-height: 1; margin-bottom: 0.6rem; }
+    #panel h2 { font-size: 1.7rem; font-weight: 500; line-height: 1.15; }
+    #panel .meta {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+      opacity: 0.6; margin: 0.8rem 0 1.8rem;
+    }
+    #panel .meta a { color: inherit; }
+    #panel .soon {
+      display: inline-block; margin-top: 0.4rem; padding: 0.55rem 0.9rem;
+      border: 1px solid rgba(239, 230, 210, 0.35); border-radius: 2px;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+    }
+    #panel p { font-size: 1.02rem; line-height: 1.62; margin-bottom: 1em; white-space: pre-line; color: #e2d8c3; }
+    @media (max-aspect-ratio: 1/1) {
+      #panel {
+        top: 50%; left: 0; width: auto;
+        padding: 2.2rem 1.4rem 3rem;
+        background: linear-gradient(to bottom, rgba(11, 10, 9, 0), rgba(11, 10, 9, 0.94) 2.2rem);
+      }
+      #panel .note { font-size: 3rem; }
+      #panel h2 { font-size: 1.4rem; }
+    }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="loading">Loading</div>
+  <div id="flat" class="hidden">
+    <img src="../assets/book/unrest-cover.webp" alt="The Unrest of My Life by Brett Goldstein">
+    <img src="../assets/book/boundless-creation-cover.webp" alt="Boundless Creation by Brett Goldstein">
+    <img src="../assets/book/as-many-hours-cover.webp" alt="As Many Hours as Possible by Brett Goldstein">
+    <img src="../assets/book/144-days-cover.webp" alt="144 Days by Brett Goldstein">
+    <img src="../assets/book/buckle-up-cover.webp" alt="Buckle Up, Don't Worry by Brett Goldstein">
+    <img src="../assets/book/everything-happens-cover.webp" alt="Everything Happens So Much by Brett Goldstein">
+  </div>
+
+  <div class="bar top">
+    <a href="../">Brett Goldstein</a>
+    <button id="back" hidden>Back to shelf</button>
+  </div>
+  <nav id="titles" aria-label="Books"><div class="track"></div></nav>
+  <div id="actions">
+    <button id="read" type="button">+ Read +</button>
+    <a id="post" target="_blank" rel="noopener">+ Instagram +</a>
+  </div>
+  <article id="panel" aria-live="polite"><div class="inner"></div></article>
+  <div class="bar bottom">
+    <h1>Birthday reflections</h1>
+    <span class="dim" id="hint">← → to browse</span>
+  </div>
+
+  <script>
+    // If the 3D shelf hasn't started after a while (say the 3D library failed to load), show the flat covers.
+    window.shelfFallback = setTimeout(function () {
+      document.getElementById('loading').classList.add('done');
+      document.getElementById('flat').classList.remove('hidden');
+    }, 15000);
+  </script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+    import { POSTS } from './posts.js';
+
+    // Spine and back-cover type follows each cover's own lettering:
+    //   type   'serif' or 'sans'
+    //   caps   set the title in spaced capitals
+    //   ink    colour of the lettering, matched to the cover's
+    //   accent optional small rule under the title, in this colour
+    const SERIF = '"Source Serif 4", Georgia, serif';
+    const SANS = 'Inter, "Helvetica Neue", Arial, sans-serif';
+    const MONO = 'ui-monospace, "SF Mono", Menlo, monospace';
+
+    // Shelf order, left to right: newest post first. `hidden` books (trip posts, not
+    // age or year recaps) stay listed here but are left off the shelf.
+    // `pages` is the thickness of the page block; it sets how fat the book is.
+    const BOOKS = [
+      { slug: 'unrest',               title: 'The Unrest of My Life',          pages: 0.30, type: 'serif', ink: '#ead9bf' },
+      { slug: 'boundless-creation',   title: 'Boundless Creation',             pages: 0.27, type: 'sans',  ink: '#d3d4cf', caps: true, accent: '#c98d3a' },
+      { slug: 'as-many-hours',        title: 'As Many Hours as Possible',      pages: 0.22, type: 'serif', ink: '#c8b47e' },
+      { slug: '144-days',             title: '144 Days',                       pages: 0.34, type: 'sans',  ink: '#f1e9d8' },
+      { slug: 'buckle-up',            title: 'Buckle Up, Don’t Worry',         pages: 0.26, type: 'sans',  ink: '#1d2836', caps: true },
+      { slug: 'everything-happens',   title: 'Everything Happens So Much',     pages: 0.28, type: 'sans',  ink: '#3a2f27' },
+      { slug: 'paper-airplanes',      title: 'Paper Airplanes in the Silence', pages: 0.24, type: 'serif', ink: '#2a2620', hidden: true },
+      { slug: 'twenty-six-point-two', title: 'Twenty-Six Point Two',           pages: 0.32, type: 'serif', ink: '#efe6d2', hidden: true },
+      { slug: 'four-days',            title: 'Four Days of Stillness',         pages: 0.20, type: 'serif', ink: '#2a2620', hidden: true },
+    ].filter((b) => !b.hidden);
+    const AUTHOR = 'Brett Goldstein';
+    const BACKDROP = 0x0b0a09;
+
+    // Book dimensions in scene units. The cover art is 2:3.
+    const W = 2, H = 3;
+    const BOARD = 0.035;          // cover board thickness
+    const SQUARE = 0.04;          // how far the boards overhang the pages
+    const BULGE = 0.06;           // how far the rounded spine sticks out
+    const SPINE_OUT = Math.PI / 2;    // rotation that turns a book's spine to the camera; 0 shows its cover
+    // Phones get lighter surface maps: less memory, and much less work at load.
+    const SMALL = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 700;
+    const MAP_W = SMALL ? 512 : 768, MAP_H = MAP_W * 1.5;   // resolution of the derived cover maps
+    const SPINE_H = 1152;                                     // spine artwork height (it's narrow, so cheap)
+    const BACK_W = 384, BACK_H = 576;                         // the back is plain, so it needs far less
+
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const stage = document.getElementById('stage');
+    const flat = document.getElementById('flat');
+    const hint = document.getElementById('hint');
+    const backBtn = document.getElementById('back');
+    const panel = document.getElementById('panel');
+    const titles = document.getElementById('titles');
+    const actions = document.getElementById('actions');
+    const readBtn = document.getElementById('read');
+    const postLink = document.getElementById('post');
+    if (matchMedia('(pointer: coarse)').matches) hint.textContent = 'Swipe to browse';
+
+    const smoothstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const hash = (n) => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+    const luma = (r, g, b) => (r * 0.3 + g * 0.59 + b * 0.11) / 255;
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function canvasOf(w, h) {
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      return c;
+    }
+
+    // Box blur of a single-channel image, done as two running-sum passes.
+    function boxBlur(src, w, h, r) {
+      const tmp = new Float32Array(w * h), out = new Float32Array(w * h);
+      for (let y = 0; y < h; y++) {
+        let sum = 0;
+        for (let x = -r; x <= r; x++) sum += src[y * w + Math.min(w - 1, Math.max(0, x))];
+        for (let x = 0; x < w; x++) {
+          tmp[y * w + x] = sum / (2 * r + 1);
+          sum += src[y * w + Math.min(w - 1, x + r + 1)] - src[y * w + Math.max(0, x - r)];
+        }
+      }
+      for (let x = 0; x < w; x++) {
+        let sum = 0;
+        for (let y = -r; y <= r; y++) sum += tmp[Math.min(h - 1, Math.max(0, y)) * w + x];
+        for (let y = 0; y < h; y++) {
+          out[y * w + x] = sum / (2 * r + 1);
+          sum += tmp[Math.min(h - 1, y + r + 1) * w + x] - tmp[Math.max(0, y - r) * w + x];
+        }
+      }
+      return out;
+    }
+
+    // The cloth is the most common colour around the cover's border; art that
+    // bleeds off one edge doesn't fool it.
+    function clothColour(ctx, w, h) {
+      const px = ctx.getImageData(0, 0, w, h).data;
+      const band = Math.round(w * 0.04);
+      const buckets = new Map();
+      const add = (x, y) => {
+        const o = (y * w + x) * 4;
+        const key = (px[o] >> 4) << 8 | (px[o + 1] >> 4) << 4 | px[o + 2] >> 4;
+        const b = buckets.get(key) || [0, 0, 0, 0];
+        b[0] += px[o]; b[1] += px[o + 1]; b[2] += px[o + 2]; b[3]++;
+        buckets.set(key, b);
+      };
+      for (let y = 0; y < h; y += 2) for (let x = 0; x < w; x += 2) {
+        if (x < band || x >= w - band || y < band || y >= h - band) add(x, y);
+      }
+      const best = [...buckets.values()].sort((a, b) => b[3] - a[3])[0];
+      return [best[0] / best[3], best[1] / best[3], best[2] / best[3]].map(Math.round);
+    }
+
+    /*
+     * Derive the surface of a cloth-bound cover from flat artwork.
+     * Anything that differs from the cloth colour counts as ink. Fine, light
+     * lettering is stamped foil: pressed in, smooth and metallic. Large areas
+     * of ink are printed: they keep the cloth's weave and stay matte.
+     * Packed into one texture: red = height, green = roughness, blue = metalness.
+     */
+    function surfaceMap(src, cloth, { groove = false } = {}) {
+      const w = src.width, h = src.height;
+      const px = src.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data;
+      const clothLum = luma(cloth[0], cloth[1], cloth[2]);
+
+      const raw = new Float32Array(w * h);
+      for (let i = 0; i < w * h; i++) {
+        const o = i * 4;
+        const d = Math.hypot(px[o] - cloth[0], px[o + 1] - cloth[1], px[o + 2] - cloth[2]);
+        raw[i] = smoothstep(40, 90, d);
+      }
+      const mask = boxBlur(raw, w, h, 1);
+      // How much ink surrounds each texel: high inside illustrations, low along thin strokes.
+      const mass = boxBlur(raw, w, h, Math.round(w * 0.014));
+
+      const out = canvasOf(w, h);
+      const ctx = out.getContext('2d');
+      const data = ctx.createImageData(w, h);
+      const THREAD = Math.max(1, Math.round(w / 384));   // cloth thread width in texels
+      const grooveX = w * 0.045, grooveW = w * 0.012;
+
+      for (let y = 0; y < h; y++) {
+        const ty = Math.floor(y / THREAD);
+        for (let x = 0; x < w; x++) {
+          const i = y * w + x, o = i * 4;
+          const m = mask[i];
+          const fine = m * (1 - smoothstep(0.35, 0.6, mass[i]));     // ink that's part of thin lettering
+          const lum = luma(px[o], px[o + 1], px[o + 2]);
+          const lighter = smoothstep(0.02, 0.15, lum - clothLum);
+          const grain = hash(i * 0.731);
+
+          // Plain weave: alternate which thread sits on top.
+          const tx = Math.floor(x / THREAD);
+          const over = (tx + ty) & 1;
+          const weave = (over ? 0.55 + 0.45 * hash(tx) : 0.2 + 0.45 * hash(ty + 7919)) + (grain - 0.5) * 0.2;
+
+          let height = lerp(0.55 + (weave - 0.5) * 0.4, 0.32, fine);          // foil is pressed into the cloth
+          if (groove) { const g = (x - grooveX) / grooveW; height -= 0.45 * Math.exp(-g * g); }
+          let rough = 0.88 + grain * 0.08;
+          rough = lerp(rough, 0.74, m - fine);                                 // printed ink: a little less dry
+          rough = lerp(rough, 0.26 + (1 - lum) * 0.25, fine);                  // stamped: smooth
+          const metal = fine * lerp(0.15, 0.9, lighter);
+
+          data.data[o] = Math.min(255, Math.max(0, height * 255));
+          data.data[o + 1] = rough * 255;
+          data.data[o + 2] = metal * 255;
+          data.data[o + 3] = 255;
+        }
+      }
+      ctx.putImageData(data, 0, 0);
+      return out;
+    }
+
+    const rgb = (c) => `rgb(${c.join(',')})`;
+
+    // A spine in the style of the book's cover, reading top to bottom, with the age at its foot.
+    function drawSpine(info, cloth, thickness, note) {
+      const c = canvasOf(Math.round(SPINE_H * thickness / H), SPINE_H);
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.fillStyle = rgb(cloth);
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.fillStyle = info.ink;
+      const wide = c.width;
+      const serif = info.type === 'serif';
+      const spaced = (px) => { if ('letterSpacing' in ctx) ctx.letterSpacing = `${px}px`; };
+
+      // Age or year, upright at the foot of the spine.
+      if (note) {
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.font = `500 ${Math.round(wide * 0.2)}px ${MONO}`;
+        spaced(1);
+        ctx.fillText(note, wide / 2, c.height - 52);
+      }
+
+      ctx.save();
+      ctx.translate(wide / 2, 0);
+      ctx.rotate(Math.PI / 2);
+      ctx.textBaseline = 'middle';
+      const TOP = 84, FOOT = 150;          // keep clear of the head and the age
+
+      // Author first, small, toward the head.
+      ctx.textAlign = 'left';
+      if (serif) { ctx.font = `italic 400 ${Math.round(wide * 0.24)}px ${SERIF}`; spaced(0); }
+      else { ctx.font = `500 ${Math.round(wide * 0.15)}px ${SANS}`; spaced(Math.round(wide * 0.05)); }
+      const author = serif ? AUTHOR : AUTHOR.toUpperCase();
+      ctx.fillText(author, TOP, 0);
+      const authorEnd = TOP + ctx.measureText(author).width;
+
+      // Title fills the rest, shrunk if it would run into the author or the foot.
+      const title = info.caps ? info.title.toUpperCase() : info.title;
+      const fontAt = (size) => serif ? `400 ${size}px ${SERIF}`
+        : info.caps ? `600 ${size}px ${SANS}` : `500 ${size}px ${SANS}`;
+      const track = (size) => info.caps ? Math.round(size * 0.18) : 0;
+      let size = Math.round(wide * (info.caps ? 0.24 : 0.36));
+      const room = c.height - FOOT - (authorEnd + 90);
+      ctx.font = fontAt(size); spaced(track(size));
+      const width = ctx.measureText(title).width;
+      if (width > room) { size = Math.floor(size * room / width); ctx.font = fontAt(size); spaced(track(size)); }
+      ctx.textAlign = 'right';
+      ctx.fillText(title, c.height - FOOT, 0);
+
+      if (info.accent) {
+        ctx.fillStyle = info.accent;
+        const end = c.height - FOOT - ctx.measureText(title).width - 36;
+        ctx.fillRect(end - 26, -1.5, 26, 3);
+      }
+      ctx.restore();
+      return c;
+    }
+
+    // The back cover: plain cloth with the author and age small at the foot.
+    // Drawn mirrored, because the back board shares the front board's UVs.
+    function drawBack(info, cloth, note) {
+      const c = canvasOf(BACK_W, BACK_H);
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.fillStyle = rgb(cloth);
+      ctx.fillRect(0, 0, c.width, c.height);
+      // Lay out on a 768 × 1152 page, mirrored.
+      const k = BACK_W / 768;
+      ctx.setTransform(-k, 0, 0, k, BACK_W, 0);
+      ctx.fillStyle = info.ink;
+      ctx.font = `500 22px ${MONO}`;
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '5px';
+      ctx.fillText(AUTHOR.toUpperCase(), 96, 1152 - 120);
+      if (note) { ctx.textAlign = 'right'; ctx.fillText(note, 768 - 96, 1152 - 120); }
+      return c;
+    }
+
+    const plain = (title) => title.replaceAll('*', '');
+
+    // Set UVs by projecting flat along one axis, so a texture lies across the whole part.
+    function projectUV(geo, uAxis, uMin, uSize, vAxis, vMin, vSize) {
+      const pos = geo.attributes.position, uv = geo.attributes.uv;
+      for (let i = 0; i < pos.count; i++) {
+        uv.setXY(i,
+          (pos.getComponent(i, uAxis) - uMin) / uSize,
+          (pos.getComponent(i, vAxis) - vMin) / vSize);
+      }
+      uv.needsUpdate = true;
+    }
+
+    // Extrude a profile drawn in the x/z plane straight up the y axis, centred on y = 0.
+    function extrudeUp(shape, height) {
+      const geo = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, curveSegments: 16 });
+      geo.rotateX(Math.PI / 2);
+      geo.translate(0, height / 2, 0);
+      return geo;
+    }
+
+    function boardGeometry() {
+      const r = 0.035, b = 0.006;
+      const x0 = -W / 2 + b, x1 = W / 2 - b, y0 = -H / 2 + b, y1 = H / 2 - b;
+      const s = new THREE.Shape();
+      s.moveTo(x0, y0);                       // spine-side corners stay square
+      s.lineTo(x1 - r, y0);
+      s.quadraticCurveTo(x1, y0, x1, y0 + r);
+      s.lineTo(x1, y1 - r);
+      s.quadraticCurveTo(x1, y1, x1 - r, y1);
+      s.lineTo(x0, y1);
+      s.closePath();
+      const geo = new THREE.ExtrudeGeometry(s, {
+        depth: BOARD - b * 2, bevelEnabled: true, bevelSize: b, bevelThickness: b, bevelSegments: 3, curveSegments: 8,
+      });
+      geo.translate(0, 0, -(BOARD - b * 2) / 2);
+      projectUV(geo, 0, -W / 2, W, 1, -H / 2, H);
+      return geo;
+    }
+
+    function spineGeometry(thickness) {
+      const xs = -W / 2, zo = thickness / 2, zi = thickness / 2 - BOARD;
+      const s = new THREE.Shape();
+      s.moveTo(xs, -zo);
+      s.quadraticCurveTo(xs - BULGE * 2, 0, xs, zo);
+      s.lineTo(xs, zi);
+      s.quadraticCurveTo(xs - (BULGE - BOARD) * 2, 0, xs, -zi);
+      s.closePath();
+      const geo = extrudeUp(s, H);
+      projectUV(geo, 2, -thickness / 2, thickness, 1, -H / 2, H);
+      return geo;
+    }
+
+    function pagesGeometry(pages) {
+      const xs = -W / 2, xf = W / 2 - SQUARE, z = pages / 2;
+      const s = new THREE.Shape();
+      s.moveTo(xs, -z);
+      s.lineTo(xf, -z);
+      s.quadraticCurveTo(xf - 0.06, 0, xf, z);                    // fore-edge dips in slightly
+      s.lineTo(xs, z);
+      s.quadraticCurveTo(xs - (BULGE - BOARD - 0.004) * 2, 0, xs, -z);   // rounded back
+      s.closePath();
+      const geo = extrudeUp(s, H - SQUARE * 2);
+      projectUV(geo, 2, -z, pages, 0, -W / 2, W);
+      return geo;
+    }
+
+    function pagesTexture() {
+      const c = canvasOf(512, 8);
+      const ctx = c.getContext('2d');
+      for (let x = 0; x < c.width; x++) {
+        const u = x / (c.width - 1);
+        // Fine page lines, shading toward the boards, and a slight warmth to the paper.
+        const lines = 0.84 + 0.16 * hash(x * 3.7);
+        const shade = 0.72 + 0.28 * smoothstep(0, 0.12, u) * smoothstep(1, 0.88, u);
+        const v = lines * shade;
+        ctx.fillStyle = `rgb(${Math.round(238 * v)}, ${Math.round(229 * v)}, ${Math.round(210 * v)})`;
+        ctx.fillRect(x, 0, 1, c.height);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    async function main() {
+      const images = await Promise.all(BOOKS.map((b) => loadImage(`../assets/book/${b.slug}-cover.webp`)));
+      await Promise.race([
+        Promise.all(['500 60px Fraunces', '400 60px "Source Serif 4"', 'italic 400 60px "Source Serif 4"', '500 60px Inter', '600 60px Inter']
+          .map((f) => document.fonts.load(f))),
+        new Promise((r) => setTimeout(r, 1500)),
+      ]).catch(() => {});
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+      // Neutral tone mapping keeps cover colours true; filmic curves washed out the lighter cloths.
+      renderer.toneMapping = THREE.NeutralToneMapping;
+      stage.appendChild(renderer.domElement);
+      const canvas = renderer.domElement;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(BACKDROP);
+      // Fog is switched on only so materials get a fog colour; each object's
+      // darkness is set directly through dimmable() below, not by distance.
+      scene.fog = new THREE.Fog(BACKDROP, 100, 200);
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      // Lights are balanced so a front-facing cover renders close to its artwork's own colour.
+      scene.environmentIntensity = 0.35;
+
+      // A long lens keeps the spines nearly flat to the screen.
+      const camera = new THREE.PerspectiveCamera(16, 1, 0.1, 200);
+
+      const key = new THREE.DirectionalLight(0xfff1dc, 1.6);
+      key.position.set(-4, 5, 7);
+      scene.add(key);
+      const glint = new THREE.DirectionalLight(0xffe2b0, 1.3);
+      scene.add(glint);
+
+      const aniso = renderer.capabilities.getMaxAnisotropy();
+      const tex = (source, srgb) => {
+        const t = source instanceof HTMLCanvasElement ? new THREE.CanvasTexture(source) : new THREE.Texture(source);
+        if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+        t.anisotropy = aniso;
+        t.needsUpdate = true;
+        return t;
+      };
+      // Lets an object fade into the backdrop on its own, by setting dim.value from 0 to 1.
+      function dimmable(material, dim) {
+        material.onBeforeCompile = (shader) => {
+          shader.uniforms.uDim = dim;
+          shader.fragmentShader = 'uniform float uDim;\n' + shader.fragmentShader.replace(
+            '#include <fog_fragment>',
+            'gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, uDim);');
+        };
+        return material;
+      }
+
+      const clothMaterial = ({ art, surface, cloth }) => new THREE.MeshPhysicalMaterial({
+        map: art || null,
+        color: art ? 0xffffff : new THREE.Color(`rgb(${cloth.join(',')})`),
+        roughnessMap: surface, metalnessMap: surface, roughness: 1, metalness: 1,
+        bumpMap: surface, bumpScale: 1.6,
+        sheen: 0.15, sheenRoughness: 0.6,
+        sheenColor: new THREE.Color(`rgb(${cloth.join(',')})`).lerp(new THREE.Color(0xffffff), 0.25),
+      });
+
+      // Shared between all books
+      const boardGeo = boardGeometry();
+      const pagesMat = new THREE.MeshStandardMaterial({ map: pagesTexture(), roughness: 0.95 });
+
+      const books = [];
+      for (const [i, info] of BOOKS.entries()) {
+        await new Promise((r) => setTimeout(r));      // let the page breathe between books
+        const thickness = info.pages + BOARD * 2;
+        const img = images[i];
+
+        // Work from a reduced copy of the art; the cover itself stays full resolution.
+        const small = canvasOf(MAP_W, MAP_H);
+        const sctx = small.getContext('2d', { willReadFrequently: true });
+        sctx.drawImage(img, 0, 0, MAP_W, MAP_H);
+        const cloth = clothColour(sctx, MAP_W, MAP_H);
+        const post = POSTS[info.slug] || {};
+
+        const spineArt = drawSpine(info, cloth, thickness, post.note);
+        const backArt = drawBack(info, cloth, post.note);
+        const group = new THREE.Group();
+        const front = new THREE.Mesh(boardGeo, clothMaterial({ art: tex(img, true), surface: tex(surfaceMap(small, cloth, { groove: true })), cloth }));
+        front.position.z = (info.pages + BOARD) / 2;
+        const rear = new THREE.Mesh(boardGeo, clothMaterial({ art: tex(backArt, true), surface: tex(surfaceMap(backArt, cloth, { groove: true })), cloth }));
+        rear.position.z = -(info.pages + BOARD) / 2;
+        const spine = new THREE.Mesh(spineGeometry(thickness), clothMaterial({ art: tex(spineArt, true), surface: tex(surfaceMap(spineArt, cloth)), cloth }));
+        const pages = new THREE.Mesh(pagesGeometry(info.pages), pagesMat.clone());
+        group.add(front, rear, spine, pages);
+
+        const book = { index: i, info, post, thickness, group, rot: SPINE_OUT, tilt: 0, dim: { value: 0 }, from: 1 };
+        for (const part of [front, rear, spine, pages]) dimmable(part.material, book.dim);
+        group.traverse((o) => { o.userData.book = book; });
+
+        // Books rise into place one after another.
+        group.position.set(0, reduceMotion ? 0 : -H * 1.4 - i * 0.5, 0);
+        group.rotation.y = book.rot;
+        scene.add(group);
+        books.push(book);
+      }
+
+      // Where the camera sits, and where a book floats while its post is being read.
+      const feature = new THREE.Vector3();
+      let viewDist = 10, featureDist = 8;
+      let dirty = true;               // something changed that needs a fresh render
+      function resize() {
+        const w = stage.clientWidth, h = stage.clientHeight;
+        // Sharp on retina, but capped at ~4 million pixels so big screens stay fast.
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2, Math.sqrt(4e6 / (w * h))));
+        renderer.setSize(w, h, false);
+        dirty = true;
+        camera.aspect = w / h;
+        const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+        const fit = (height, width) => Math.max(height / 2 / tan, width / 2 / (tan * camera.aspect));
+        const narrow = camera.aspect < 1;
+        // Room for the front-facing book plus a few spines either side.
+        viewDist = fit(H / 0.56, (W + 1.6) / 0.92);
+        // The read view shares the screen with its text: left half when wide, top half when tall.
+        featureDist = Math.min(narrow ? fit(H / 0.4, (W + 0.9) / 0.88) : fit(H / 0.68, (W + 0.9) / 0.44), viewDist - 1.5);
+        // Look a little above the books so they sit below the title strip.
+        const look = new THREE.Vector3(0, H * 0.08, 0);
+        camera.position.set(0, H * 0.08, viewDist);
+        camera.lookAt(look);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+        const viewH = 2 * tan * featureDist, viewW = viewH * camera.aspect;
+        feature.set(0, look.y, viewDist - featureDist)
+          .add(new THREE.Vector3(narrow ? 0 : -0.24 * viewW, narrow ? 0.21 * viewH : 0, 0));
+      }
+      addEventListener('resize', resize);
+      resize();
+
+      // ---------- Title strip ----------
+      const track = titles.firstElementChild;
+      const titleEls = books.map((book) => {
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = 't';
+        book.info.title.split('*').forEach((part, i) => {
+          const span = document.createElement(i % 2 ? 'em' : 'span');
+          span.textContent = part;
+          el.appendChild(span);
+        });
+        if (book.post.note) {
+          const sup = document.createElement('sup');
+          sup.textContent = `(${book.post.note})`;
+          el.appendChild(sup);
+        }
+        el.addEventListener('click', () => { closeRead(); setActive(book.index); });
+        track.appendChild(el);
+        return el;
+      });
+      function layoutTitles() {
+        const el = titleEls[active];
+        track.style.transform = `translateX(${innerWidth / 2 - (el.offsetLeft + el.offsetWidth / 2)}px)`;
+        titleEls.forEach((t, i) => t.classList.toggle('on', i === active));
+      }
+      addEventListener('resize', layoutTitles);
+      document.fonts.ready.then(layoutTitles);
+
+      // ---------- State ----------
+      const REST = 0.35;                      // angle a book settles at while its post is read
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2();
+      let active = 0, hovered = null, reading = null, focus = 0;
+      let showActions = false, overActions = false;
+      let spin = 0, velocity = 0, tilt = 0;
+      let down = null, dragging = false, lastX = 0, lastY = 0;
+      let px = 0, py = 0, sx = 0, sy = 0;
+      let wheelSum = 0, wheelLock = 0;
+
+      function bookAt(e) {
+        const rect = canvas.getBoundingClientRect();
+        pointer.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+        raycaster.setFromCamera(pointer, camera);
+        const hit = raycaster.intersectObjects(books.map((b) => b.group), true)[0];
+        return hit ? hit.object.userData.book : null;
+      }
+      function updateUI() {
+        const book = books[active];
+        readBtn.textContent = book.post.comingSoon ? '+ Coming soon +' : '+ Read +';
+        postLink.hidden = !book.post.url;
+        if (book.post.url) postLink.href = book.post.url;
+        backBtn.hidden = !reading;
+        hint.hidden = !!reading;
+        titles.classList.toggle('away', !!reading);
+        document.body.classList.toggle('reading', !!reading);
+        canvas.classList.toggle('reading', !!reading);
+        canvas.classList.toggle('hover', !reading && !!hovered && hovered.index !== active);
+      }
+      function setActive(i) {
+        i = Math.max(0, Math.min(books.length - 1, i));
+        if (i === active) return;
+        active = i;
+        showActions = false; overActions = false;
+        layoutTitles();
+        updateUI();
+      }
+      function fillPanel(book) {
+        const post = book.post;
+        const inner = panel.firstElementChild;
+        const add = (tag, cls, text) => {
+          const el = document.createElement(tag);
+          if (cls) el.className = cls;
+          if (text) el.textContent = text;
+          return inner.appendChild(el);
+        };
+        inner.replaceChildren();
+        if (post.note) add('div', 'note', post.note);
+        add('h2', '', plain(book.info.title));
+        const meta = add('div', 'meta', post.date ? `${post.date} · ` : 'Brett Goldstein');
+        if (post.comingSoon) add('div', 'soon', 'Coming soon');
+        if (post.url) {
+          const link = document.createElement('a');
+          link.href = post.url; link.target = '_blank'; link.rel = 'noopener';
+          link.textContent = 'Instagram';
+          meta.appendChild(link);
+        }
+        (post.text || '').split(/\n{2,}/).filter(Boolean).forEach((para) => add('p', '', para));
+        panel.scrollTop = 0;
+      }
+      function openRead() {
+        const book = books[active];
+        reading = book; hovered = null; showActions = false; overActions = false;
+        spin = 0; velocity = 0; tilt = 0;
+        fillPanel(book);
+        book.from = Math.max(0.001, book.group.position.distanceTo(feature));
+        panel.classList.add('open');
+        updateUI();
+      }
+      function closeRead() {
+        if (!reading) return;
+        // Take the short way round to face-front, however far the book was spun.
+        reading.rot = Math.atan2(Math.sin(reading.rot), Math.cos(reading.rot));
+        reading = null;
+        panel.classList.remove('open');
+        updateUI();
+      }
+
+      // ---------- Input ----------
+      canvas.addEventListener('pointerdown', (e) => {
+        down = { x: e.clientX, y: e.clientY, book: bookAt(e), type: e.pointerType };
+        lastX = e.clientX; lastY = e.clientY;
+        if (reading) { dragging = true; velocity = 0; canvas.classList.add('dragging'); }
+        canvas.setPointerCapture(e.pointerId);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (dragging) {
+          const dx = (e.clientX - lastX) * 0.009;
+          spin += dx; velocity = dx;
+          tilt = THREE.MathUtils.clamp(tilt + (e.clientY - lastY) * 0.004, -0.5, 0.5);
+          lastX = e.clientX; lastY = e.clientY;
+          return;
+        }
+        if (reading || e.pointerType === 'touch') return;
+        const book = bookAt(e);
+        if (book !== hovered) { hovered = book; updateUI(); }
+        showActions = !!book && book.index === active;
+      });
+      canvas.addEventListener('pointerup', (e) => {
+        const dx = down ? e.clientX - down.x : 0;
+        const wasClick = down && Math.hypot(dx, e.clientY - down.y) < 6;
+        if (dragging) { dragging = false; canvas.classList.remove('dragging'); }
+        if (down && !reading && !wasClick && Math.abs(dx) > 40) {
+          setActive(active + (dx < 0 ? 1 : -1));      // swipe through the row
+        } else if (wasClick) {
+          const book = down.book;
+          if (reading) { if (book !== reading) closeRead(); }
+          else if (book && book.index !== active) setActive(book.index);
+          else if (book && down.type === 'touch') showActions = !showActions;
+          else if (book) openRead();
+        }
+        down = null;
+      });
+      canvas.addEventListener('pointercancel', () => { dragging = false; down = null; canvas.classList.remove('dragging'); });
+      canvas.addEventListener('pointerleave', () => {
+        if (hovered) { hovered = null; updateUI(); }
+        setTimeout(() => { if (!overActions && !hovered) showActions = false; }, 0);
+      });
+      canvas.addEventListener('wheel', (e) => {
+        if (reading) return;
+        e.preventDefault();
+        if (performance.now() < wheelLock) return;
+        wheelSum += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (Math.abs(wheelSum) > 50) {
+          setActive(active + Math.sign(wheelSum));
+          wheelSum = 0;
+          wheelLock = performance.now() + 380;
+        }
+      }, { passive: false });
+      actions.addEventListener('pointerenter', () => { overActions = true; });
+      actions.addEventListener('pointerleave', () => { overActions = false; });
+      readBtn.addEventListener('click', openRead);
+      addEventListener('pointermove', (e) => {
+        px = (e.clientX / innerWidth) * 2 - 1;
+        py = (e.clientY / innerHeight) * 2 - 1;
+      });
+      addEventListener('keydown', (e) => {
+        const onControl = e.target.closest && e.target.closest('button, a, input');
+        if (e.key === 'Escape') closeRead();
+        else if (onControl && (e.key === 'Enter' || e.key === ' ')) return;
+        else if (reading) return;
+        else if (e.key === 'ArrowRight') setActive(active + 1);
+        else if (e.key === 'ArrowLeft') setActive(active - 1);
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRead(); }
+      });
+      backBtn.addEventListener('click', closeRead);
+
+      // ---------- Animation ----------
+      const GAP = 0.34;               // space between spines
+      const ROOM = 0.3;               // extra space either side of the front-facing book
+      const clock = new THREE.Clock();
+      const target = new THREE.Vector3();
+      const screen = new THREE.Vector3();
+      let slots = [];
+      function layoutRow() {
+        // Each book takes its thickness while spine-out, or the cover width while facing front.
+        let cursor = 0;
+        slots = books.map((book, i) => {
+          const width = i === active ? W : book.thickness;
+          if (i > 0) cursor += GAP + (i === active || i - 1 === active ? ROOM : 0);
+          const x = cursor + width / 2;
+          cursor += width;
+          return x;
+        });
+        const centre = slots[active];
+        slots = slots.map((x) => x - centre);
+      }
+
+      function frame() {
+        const dt = Math.min(clock.getDelta(), 0.05);
+        const t = clock.elapsedTime;
+        const ease = (rate) => 1 - Math.exp(-dt * rate);
+
+        if (!dragging) { spin += velocity; velocity *= Math.pow(0.95, dt * 60); tilt *= Math.pow(0.94, dt * 60); }
+        const psx = sx, psy = sy;
+        sx += (px - sx) * ease(3.6);
+        sy += (py - sy) * ease(3.6);
+        let motion = Math.abs(sx - psx) + Math.abs(sy - psy) + Math.abs(velocity);
+        layoutRow();
+
+        for (const book of books) {
+          const isActive = book.index === active;
+          let rot = SPINE_OUT, lean = 0;
+          if (book === reading) {
+            target.copy(feature);
+            if (!reduceMotion) target.y += Math.sin(t * 0.9) * 0.03;
+            rot = REST + spin + (reduceMotion ? 0 : Math.sin(t * 0.6) * 0.09) + sx * 0.22;
+            lean = 0.05 + tilt + sy * 0.1;
+          } else {
+            // Spines line up on one plane; the front-facing cover sits just proud of them.
+            target.set(slots[book.index], 0, isActive ? W / 2 + 0.12 - book.thickness / 2 : 0);
+            if (isActive) {
+              rot = reduceMotion ? 0 : sx * 0.12;     // turns a touch toward the pointer
+              lean = reduceMotion ? 0 : sy * 0.05;
+            } else if (book === hovered) {
+              target.z += 0.18;
+            }
+          }
+          motion += book.group.position.distanceTo(target) + Math.abs(rot - book.rot) + Math.abs(lean - book.tilt);
+          book.group.position.lerp(target, ease(book === reading ? 5 : 7));
+          book.rot += (rot - book.rot) * ease(book === reading ? 9 : 7);
+          book.tilt += (lean - book.tilt) * ease(9);
+          book.group.rotation.set(book.tilt, book.rot, 0);
+
+          // Spines beside the front-facing book sit slightly in shadow; while reading, all but one vanish.
+          const goal = reading ? (book === reading ? 0 : 1) : (isActive ? 0 : 0.18);
+          motion += Math.abs(goal - book.dim.value);
+          book.dim.value += (goal - book.dim.value) * ease(reading ? 14 : 6);
+        }
+
+        motion += Math.abs((reading ? 1 : 0) - focus);
+        focus += ((reading ? 1 : 0) - focus) * ease(reading ? 14 : 8);
+        // Text fades in only once the background is dark and the book has nearly arrived,
+        // and fades out first when the book goes back.
+        const arrived = reading ? 1 - reading.group.position.distanceTo(feature) / reading.from : 0;
+        panel.style.opacity = smoothstep(0.75, 0.98, focus) * smoothstep(0.6, 0.9, arrived);
+
+        // The hover buttons sit over the middle of the front-facing cover.
+        const shown = !reading && (showActions || overActions);
+        actions.classList.toggle('show', shown);
+        if (shown) {
+          screen.copy(books[active].group.position).project(camera);
+          actions.style.transform = `translate(${(screen.x + 1) / 2 * innerWidth}px, ${(1 - screen.y) / 2 * innerHeight}px) translate(-50%, -50%)`;
+        }
+
+        // A light near the camera that follows the pointer, so foil catches it as you move.
+        glint.position.set(sx * 8, H * 0.5 - sy * 6, viewDist * 0.6);
+        // Once everything has settled, stop drawing until something moves. A book being
+        // read keeps a gentle sway, so that view always draws.
+        if (dirty || motion > 1e-4 || (reading && !reduceMotion)) renderer.render(scene, camera);
+        dirty = false;
+        requestAnimationFrame(frame);
+      }
+      layoutTitles();
+      updateUI();
+      frame();
+      clearTimeout(window.shelfFallback);
+      canvas.classList.add('ready');
+      flat.classList.add('hidden');
+      document.getElementById('loading').classList.add('done');
+      titles.classList.add('ready');
+    }
+
+    // If 3D can't run, fall back to the flat covers.
+    main().catch((err) => {
+      console.error('3D shelf failed to start; showing the flat covers.', err);
+      document.getElementById('loading').classList.add('done');
+      flat.classList.remove('hidden');
+    });
+  </script>
+  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "076f8fc39fa743d79db3e3c47cc0ab3f"}'></script>
+</body>
+</html>

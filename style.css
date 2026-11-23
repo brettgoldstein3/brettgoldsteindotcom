@@ -314,10 +314,20 @@ ul, ol {
   margin-bottom: 1.15rem;
 }
 
-.tab-labels label {
+.tab-labels label,
+.tab-labels a {
   border-bottom: 1px solid transparent;
   cursor: pointer;
   padding-bottom: 0.15rem;
+}
+
+.tab-labels a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tab-labels a:hover {
+  color: #222222;
 }
 
 #tab-essays:checked ~ .tab-labels label[for="tab-essays"],
