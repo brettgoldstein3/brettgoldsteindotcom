@@ -770,7 +770,7 @@
         down = { x: e.clientX, y: e.clientY, book: bookAt(e), type: e.pointerType };
         lastX = e.clientX; lastY = e.clientY;
         if (reading) { dragging = true; velocity = 0; canvas.classList.add('dragging'); }
-        canvas.setPointerCapture(e.pointerId);
+        try { canvas.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
       });
       canvas.addEventListener('pointermove', (e) => {
         if (dragging) {
@@ -795,13 +795,13 @@
           const book = down.book;
           if (reading) { if (book !== reading) closeRead(); }
           else if (book && book.index !== active) setActive(book.index);
-          else if (book && down.type === 'touch') showActions = !showActions;
-          else if (book) openRead();
+          else if (book) openRead();          // on touch there's no hover, so a tap opens it straight away
         }
         down = null;
       });
       canvas.addEventListener('pointercancel', () => { dragging = false; down = null; canvas.classList.remove('dragging'); });
-      canvas.addEventListener('pointerleave', () => {
+      canvas.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'touch') return;     // a finger lifting counts as leaving; it isn't a hover ending
         if (hovered) { hovered = null; updateUI(); }
         setTimeout(() => { if (!overActions && !hovered) showActions = false; }, 0);
       });
