@@ -208,12 +208,12 @@
     // age or year recaps) stay listed here but are left off the shelf.
     // `pages` is the thickness of the page block; it sets how fat the book is.
     const BOOKS = [
-      { slug: 'unrest',               title: 'The Unrest of My Life',          pages: 0.30, type: 'serif', ink: '#ead9bf' },
-      { slug: 'boundless-creation',   title: 'Boundless Creation',             pages: 0.27, type: 'sans',  ink: '#d3d4cf', caps: true, accent: '#c98d3a' },
-      { slug: 'as-many-hours',        title: 'As Many Hours as Possible',      pages: 0.22, type: 'serif', ink: '#c8b47e' },
-      { slug: '144-days',             title: '144 Days',                       pages: 0.34, type: 'sans',  ink: '#f1e9d8' },
-      { slug: 'buckle-up',            title: 'Buckle Up, Don’t Worry',         pages: 0.26, type: 'sans',  ink: '#1d2836', caps: true },
-      { slug: 'everything-happens',   title: 'Everything Happens So Much',     pages: 0.28, type: 'sans',  ink: '#3a2f27' },
+      { slug: 'unrest',               title: 'The Unrest of My Life',          pages: 0.30, type: 'serif', ink: '#ead9bf', paperCover: 'unrest-zine' },
+      { slug: 'boundless-creation',   title: 'Boundless Creation',             pages: 0.27, type: 'sans',  ink: '#d3d4cf', caps: true, accent: '#c98d3a', paperCover: 'boundless-creation-zine' },
+      { slug: 'as-many-hours',        title: 'As Many Hours as Possible',      pages: 0.22, type: 'serif', ink: '#c8b47e', paperCover: 'as-many-hours-zine' },
+      { slug: '144-days',             title: '144 Days',                       pages: 0.34, type: 'sans',  ink: '#f1e9d8', paperCover: '144-days-zine' },
+      { slug: 'buckle-up',            title: 'Buckle Up, Don’t Worry',         pages: 0.26, type: 'sans',  ink: '#1d2836', caps: true, paperCover: 'buckle-up-zine' },
+      { slug: 'everything-happens',   title: 'Everything Happens So Much',     pages: 0.28, type: 'sans',  ink: '#3a2f27', paperCover: 'everything-happens-zine' },
       { slug: 'paper-airplanes',      title: 'Paper Airplanes in the Silence', pages: 0.24, type: 'serif', ink: '#2a2620', hidden: true },
       { slug: 'twenty-six-point-two', title: 'Twenty-Six Point Two',           pages: 0.32, type: 'serif', ink: '#efe6d2', hidden: true },
       { slug: 'four-days',            title: 'Four Days of Stillness',         pages: 0.20, type: 'serif', ink: '#2a2620', hidden: true },
@@ -223,9 +223,65 @@
 
     // Book dimensions in scene units. The cover art is 2:3.
     const W = 2, H = 3;
-    const BOARD = 0.035;          // cover board thickness
-    const SQUARE = 0.04;          // how far the boards overhang the pages
-    const BULGE = 0.06;           // how far the rounded spine sticks out
+
+    /*
+     * Two looks share this page:
+     *   essay: thin paper-covered essays, propped face-out and fanned either side.
+     *   book:  the original clothbound hardcovers, spine-out in a row.
+     * Add ?style=book (or ?style=essay) to the URL to switch for one visit.
+     * Change DEFAULT_STYLE to switch the page for good.
+     */
+    const STYLES = {
+      book: {
+        board: 0.035,             // cover board thickness
+        square: 0.04,             // how far the boards overhang the pages
+        bulge: 0.06,              // how far the rounded spine sticks out; 0 makes a flat spine
+        corner: 0.035,            // corner rounding on the fore-edge
+        foreDip: 0.06,            // how far the fore-edge of the pages curves in
+        thickness: (pages) => pages,
+        paper: false,             // false: cloth with stamped foil; true: matte printed paper
+        spineText: true,
+        layout: 'row',            // 'row' of spines, or 'fan' of covers
+        dimSide: 0.18,            // how far the books beside the front one sink into shadow
+        viewWidth: W + 1.6,       // how much of the shelf fits across a wide screen
+      },
+      essay: {
+        board: 0.006,
+        square: 0.008,
+        bulge: 0,
+        corner: 0.012,
+        foreDip: 0.008,
+        thickness: (pages) => 0.035 + (pages - 0.2) * 0.2,    // 0.04 to 0.06: a few dozen pages
+        paper: true,
+        spineText: false,
+        layout: 'fan',
+        dimSide: 0.3,
+        viewWidth: W + 3.8,
+      },
+      zine: {
+        board: 0.0025,            // the cover is the same paper as the pages
+        square: 0.003,
+        bulge: 0.008,             // a folded spine, not a flat one
+        corner: 0.004,
+        foreDip: -0.03,           // creep: the inner sheets poke out past the cover at the fore-edge
+        thickness: (pages) => 0.01 + (pages - 0.2) * 0.06,    // a handful of folded sheets
+        paper: true,
+        tooth: true,              // rough, uncoated stock and no scored hinge
+        staples: true,
+        lift: 0.035,              // the cover springs open a little at the fore-edge
+        jitter: true,             // nothing quite straight
+        spineText: false,
+        layout: 'fan',
+        dimSide: 0.3,
+        viewWidth: W + 3.8,
+      },
+    };
+    // A magazine: the zine's stapled shape on bright, coated gloss stock.
+    STYLES.magazine = { ...STYLES.zine, tooth: false, gloss: true, lift: 0.02, pageTint: [244, 242, 238] };
+    const DEFAULT_STYLE = 'zine';
+    const STYLE_NAME = new URLSearchParams(location.search).get('style');
+    const S = STYLES[Object.hasOwn(STYLES, STYLE_NAME) ? STYLE_NAME : DEFAULT_STYLE];
+    const BOARD = S.board, SQUARE = S.square, BULGE = S.bulge;
     const SPINE_OUT = Math.PI / 2;    // rotation that turns a book's spine to the camera; 0 shows its cover
     // Phones get lighter surface maps: less memory, and much less work at load.
     const SMALL = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 700;
@@ -345,6 +401,18 @@
           const lighter = smoothstep(0.02, 0.15, lum - clothLum);
           const grain = hash(i * 0.731);
 
+          if (S.paper) {
+            // Printed paper: nearly flat, evenly matte, ink a touch smoother, a scored hinge.
+            // Zine stock is rougher, and photocopier toner sits on it with a faint sheen.
+            let height = 0.5 + (grain - 0.5) * (S.tooth ? 0.16 : S.gloss ? 0.015 : 0.06);
+            if (groove && !S.tooth && !S.gloss) { const g = (x - grooveX) / grooveW; height -= 0.2 * Math.exp(-g * g); }
+            data.data[o] = height * 255;
+            data.data[o + 1] = (S.gloss ? 0.64 + grain * 0.03 : S.tooth ? lerp(0.86 + grain * 0.08, 0.62, m) : lerp(0.66 + grain * 0.06, 0.52, m)) * 255;
+            data.data[o + 2] = 0;
+            data.data[o + 3] = 255;
+            continue;
+          }
+
           // Plain weave: alternate which thread sits on top.
           const tx = Math.floor(x / THREAD);
           const over = (tx + ty) & 1;
@@ -375,6 +443,7 @@
       const ctx = c.getContext('2d', { willReadFrequently: true });
       ctx.fillStyle = rgb(cloth);
       ctx.fillRect(0, 0, c.width, c.height);
+      if (!S.spineText) return c;       // too thin to letter
       ctx.fillStyle = info.ink;
       const wide = c.width;
       const serif = info.type === 'serif';
@@ -465,7 +534,7 @@
     }
 
     function boardGeometry() {
-      const r = 0.035, b = 0.006;
+      const r = S.corner, b = Math.min(0.006, BOARD * 0.3);
       const x0 = -W / 2 + b, x1 = W / 2 - b, y0 = -H / 2 + b, y1 = H / 2 - b;
       const s = new THREE.Shape();
       s.moveTo(x0, y0);                       // spine-side corners stay square
@@ -486,10 +555,18 @@
     function spineGeometry(thickness) {
       const xs = -W / 2, zo = thickness / 2, zi = thickness / 2 - BOARD;
       const s = new THREE.Shape();
-      s.moveTo(xs, -zo);
-      s.quadraticCurveTo(xs - BULGE * 2, 0, xs, zo);
-      s.lineTo(xs, zi);
-      s.quadraticCurveTo(xs - (BULGE - BOARD) * 2, 0, xs, -zi);
+      if (BULGE) {
+        s.moveTo(xs, -zo);
+        s.quadraticCurveTo(xs - BULGE * 2, 0, xs, zo);
+        s.lineTo(xs, zi);
+        s.quadraticCurveTo(xs - (BULGE - BOARD) * 2, 0, xs, -zi);
+      } else {
+        // Flat spine: a strip of cover, as thick as the cover, wrapped round the back of the pages.
+        s.moveTo(xs, -zo);
+        s.lineTo(xs, zo);
+        s.lineTo(xs + BOARD, zo);
+        s.lineTo(xs + BOARD, -zo);
+      }
       s.closePath();
       const geo = extrudeUp(s, H);
       projectUV(geo, 2, -thickness / 2, thickness, 1, -H / 2, H);
@@ -497,13 +574,13 @@
     }
 
     function pagesGeometry(pages) {
-      const xs = -W / 2, xf = W / 2 - SQUARE, z = pages / 2;
+      const xs = -W / 2 + (BULGE ? 0 : BOARD), xf = W / 2 - SQUARE, z = pages / 2;
       const s = new THREE.Shape();
       s.moveTo(xs, -z);
       s.lineTo(xf, -z);
-      s.quadraticCurveTo(xf - 0.06, 0, xf, z);                    // fore-edge dips in slightly
+      s.quadraticCurveTo(xf - S.foreDip, 0, xf, z);               // fore-edge dips in slightly
       s.lineTo(xs, z);
-      s.quadraticCurveTo(xs - (BULGE - BOARD - 0.004) * 2, 0, xs, -z);   // rounded back
+      if (BULGE) s.quadraticCurveTo(xs - (BULGE - BOARD - 0.004) * 2, 0, xs, -z);   // rounded back
       s.closePath();
       const geo = extrudeUp(s, H - SQUARE * 2);
       projectUV(geo, 2, -z, pages, 0, -W / 2, W);
@@ -519,7 +596,8 @@
         const lines = 0.84 + 0.16 * hash(x * 3.7);
         const shade = 0.72 + 0.28 * smoothstep(0, 0.12, u) * smoothstep(1, 0.88, u);
         const v = lines * shade;
-        ctx.fillStyle = `rgb(${Math.round(238 * v)}, ${Math.round(229 * v)}, ${Math.round(210 * v)})`;
+        const [pr, pg, pb] = S.pageTint || [238, 229, 210];
+        ctx.fillStyle = `rgb(${Math.round(pr * v)}, ${Math.round(pg * v)}, ${Math.round(pb * v)})`;
         ctx.fillRect(x, 0, 1, c.height);
       }
       const tex = new THREE.CanvasTexture(c);
@@ -528,7 +606,9 @@
     }
 
     async function main() {
-      const images = await Promise.all(BOOKS.map((b) => loadImage(`../assets/book/${b.slug}-cover.webp`)));
+      // Paper styles (essay, zine, magazine) use a book's printed-paper cover where it has one.
+      const coverOf = (b) => (S.paper && b.paperCover) || b.slug;
+      const images = await Promise.all(BOOKS.map((b) => loadImage(`../assets/book/${coverOf(b)}-cover.webp`)));
       await Promise.race([
         Promise.all(['500 60px Fraunces', '400 60px "Source Serif 4"', 'italic 400 60px "Source Serif 4"', '500 60px Inter', '600 60px Inter']
           .map((f) => document.fonts.load(f))),
@@ -557,7 +637,7 @@
       const key = new THREE.DirectionalLight(0xfff1dc, 1.6);
       key.position.set(-4, 5, 7);
       scene.add(key);
-      const glint = new THREE.DirectionalLight(0xffe2b0, 1.3);
+      const glint = new THREE.DirectionalLight(0xffe2b0, S.gloss ? 0.15 : 1.3);   // gloss catches it far more, so much less of it
       scene.add(glint);
 
       const aniso = renderer.capabilities.getMaxAnisotropy();
@@ -583,19 +663,26 @@
         map: art || null,
         color: art ? 0xffffff : new THREE.Color(`rgb(${cloth.join(',')})`),
         roughnessMap: surface, metalnessMap: surface, roughness: 1, metalness: 1,
-        bumpMap: surface, bumpScale: 1.6,
-        sheen: 0.15, sheenRoughness: 0.6,
+        bumpMap: surface, bumpScale: S.gloss ? 0.15 : S.paper ? 0.6 : 1.6,
+        // Coated stock: a thin clear varnish that throws a crisp highlight as the light moves.
+        clearcoat: S.gloss ? 0.25 : 0, clearcoatRoughness: 0.16,
+        specularIntensity: S.gloss ? 0.35 : 1,      // the paper under the varnish stays soft; the varnish gives the shine
+        sheen: S.paper ? 0 : 0.15, sheenRoughness: 0.6,
         sheenColor: new THREE.Color(`rgb(${cloth.join(',')})`).lerp(new THREE.Color(0xffffff), 0.25),
       });
 
       // Shared between all books
       const boardGeo = boardGeometry();
       const pagesMat = new THREE.MeshStandardMaterial({ map: pagesTexture(), roughness: 0.95 });
+      // A staple's crown, lying along the spine fold.
+      const stapleGeo = new THREE.BoxGeometry(0.004, 0.2, 0.011);
+      const stapleMat = new THREE.MeshStandardMaterial({ color: 0xc4c8cc, metalness: 1, roughness: 0.3 });
 
       const books = [];
       for (const [i, info] of BOOKS.entries()) {
         await new Promise((r) => setTimeout(r));      // let the page breathe between books
-        const thickness = info.pages + BOARD * 2;
+        const block = S.thickness(info.pages);       // page block thickness for this style
+        const thickness = block + BOARD * 2;
         const img = images[i];
 
         // Work from a reduced copy of the art; the cover itself stays full resolution.
@@ -609,15 +696,35 @@
         const backArt = drawBack(info, cloth, post.note);
         const group = new THREE.Group();
         const front = new THREE.Mesh(boardGeo, clothMaterial({ art: tex(img, true), surface: tex(surfaceMap(small, cloth, { groove: true })), cloth }));
-        front.position.z = (info.pages + BOARD) / 2;
         const rear = new THREE.Mesh(boardGeo, clothMaterial({ art: tex(backArt, true), surface: tex(surfaceMap(backArt, cloth, { groove: true })), cloth }));
-        rear.position.z = -(info.pages + BOARD) / 2;
+        rear.position.z = -(block + BOARD) / 2;
         const spine = new THREE.Mesh(spineGeometry(thickness), clothMaterial({ art: tex(spineArt, true), surface: tex(surfaceMap(spineArt, cloth)), cloth }));
-        const pages = new THREE.Mesh(pagesGeometry(info.pages), pagesMat.clone());
-        group.add(front, rear, spine, pages);
+        const pages = new THREE.Mesh(pagesGeometry(block), pagesMat.clone());
+        // The front cover hinges at the spine, so it can spring open a little.
+        const hinge = new THREE.Group();
+        hinge.position.set(-W / 2, 0, (block + BOARD) / 2);
+        hinge.rotation.y = -(S.lift || 0) * (0.7 + 0.6 * hash(i + 11));
+        front.position.x = W / 2;
+        hinge.add(front);
+        group.add(hinge, rear, spine, pages);
+        const parts = [front, rear, spine, pages];
+        if (S.staples) {
+          // Two staples through the fold.
+          for (const y of [-H * 0.27, H * 0.27]) {
+            const staple = new THREE.Mesh(stapleGeo, stapleMat.clone());
+            staple.position.set(-W / 2 - BULGE - 0.0015, y, 0);
+            group.add(staple);
+            parts.push(staple);
+          }
+        }
 
-        const book = { index: i, info, post, thickness, group, rot: SPINE_OUT, tilt: 0, dim: { value: 0 }, from: 1 };
-        for (const part of [front, rear, spine, pages]) dimmable(part.material, book.dim);
+        const book = {
+          index: i, info, post, thickness, group, rot: SPINE_OUT, tilt: 0, dim: { value: 0 }, from: 1,
+          // Zines sit slightly crooked, each in its own way.
+          roll: S.jitter ? (hash(i + 3) - 0.5) * 0.07 : 0, rollNow: 0,
+          bob: S.jitter ? (hash(i + 5) - 0.5) * 0.08 : 0,
+        };
+        for (const part of parts) dimmable(part.material, book.dim);
         group.traverse((o) => { o.userData.book = book; });
 
         // Books rise into place one after another.
@@ -641,8 +748,9 @@
         const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
         const fit = (height, width) => Math.max(height / 2 / tan, width / 2 / (tan * camera.aspect));
         const narrow = camera.aspect < 1;
-        // Room for the front-facing book plus a few spines either side.
-        viewDist = fit(H / 0.56, (W + 1.6) / 0.92);
+        // Room for the front-facing book plus a few spines or covers either side.
+        // Tall screens keep the front book large and let the rest run off the edges.
+        viewDist = fit(H / 0.56, (narrow ? Math.min(S.viewWidth, W + 1.6) : S.viewWidth) / 0.92);
         // The read view shares the screen with its text: left half when wide, top half when tall.
         featureDist = Math.min(narrow ? fit(H / 0.4, (W + 0.9) / 0.88) : fit(H / 0.68, (W + 0.9) / 0.44), viewDist - 1.5);
         // Look a little above the books so they sit below the title strip.
@@ -843,8 +951,22 @@
       const clock = new THREE.Clock();
       const target = new THREE.Vector3();
       const screen = new THREE.Vector3();
+      // The fan: covers either side of the front one, turned in toward it and overlapping.
+      const FAN_TURN = 1.1;           // how far the side covers turn away from the camera
+      const FAN_FIRST = 0.15;         // gap between the front cover and its nearest neighbour
+      const FAN_STEP = 0.42;          // spacing between the side covers
+      const FAN_BACK = 0.45;          // how far behind the front cover the side covers stand
+      const RACK = -0.06;             // everything leans back slightly, as if propped on a ledge
       let slots = [];
       function layoutRow() {
+        if (S.layout === 'fan') {
+          const half = Math.cos(FAN_TURN) * W / 2;      // half the width a turned cover takes up
+          slots = books.map((book, i) => {
+            const d = i - active;
+            return d === 0 ? 0 : Math.sign(d) * (W / 2 + FAN_FIRST + half + (Math.abs(d) - 1) * FAN_STEP);
+          });
+          return;
+        }
         // Each book takes its thickness while spine-out, or the cover width while facing front.
         let cursor = 0;
         slots = books.map((book, i) => {
@@ -878,6 +1000,17 @@
             if (!reduceMotion) target.y += Math.sin(t * 0.9) * 0.03;
             rot = REST + spin + (reduceMotion ? 0 : Math.sin(t * 0.6) * 0.09) + sx * 0.22;
             lean = 0.05 + tilt + sy * 0.1;
+          } else if (S.layout === 'fan') {
+            const d = book.index - active;
+            target.set(slots[book.index], 0, isActive ? 0 : -FAN_BACK);
+            lean = RACK;
+            if (isActive) {
+              rot = reduceMotion ? 0 : sx * 0.12;
+              lean += reduceMotion ? 0 : sy * 0.05;
+            } else {
+              rot = -Math.sign(d) * FAN_TURN;          // side covers turn in toward the front one
+              if (book === hovered) target.z += 0.18;
+            }
           } else {
             // Spines line up on one plane; the front-facing cover sits just proud of them.
             target.set(slots[book.index], 0, isActive ? W / 2 + 0.12 - book.thickness / 2 : 0);
@@ -888,14 +1021,17 @@
               target.z += 0.18;
             }
           }
-          motion += book.group.position.distanceTo(target) + Math.abs(rot - book.rot) + Math.abs(lean - book.tilt);
+          if (book !== reading) target.y += book.bob;
+          const roll = book === reading ? 0 : isActive ? book.roll * 0.4 : book.roll;
+          motion += book.group.position.distanceTo(target) + Math.abs(rot - book.rot) + Math.abs(lean - book.tilt) + Math.abs(roll - book.rollNow);
           book.group.position.lerp(target, ease(book === reading ? 5 : 7));
           book.rot += (rot - book.rot) * ease(book === reading ? 9 : 7);
           book.tilt += (lean - book.tilt) * ease(9);
-          book.group.rotation.set(book.tilt, book.rot, 0);
+          book.rollNow += (roll - book.rollNow) * ease(7);
+          book.group.rotation.set(book.tilt, book.rot, book.rollNow);
 
           // Spines beside the front-facing book sit slightly in shadow; while reading, all but one vanish.
-          const goal = reading ? (book === reading ? 0 : 1) : (isActive ? 0 : 0.18);
+          const goal = reading ? (book === reading ? 0 : 1) : (isActive ? 0 : S.dimSide);
           motion += Math.abs(goal - book.dim.value);
           book.dim.value += (goal - book.dim.value) * ease(reading ? 14 : 6);
         }
