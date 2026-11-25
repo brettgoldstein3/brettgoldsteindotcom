@@ -387,23 +387,30 @@
     const hash = (n) => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
     const luma = (r, g, b) => (r * 0.3 + g * 0.59 + b * 0.11) / 255;
 
-    // Essays from the writing page, newest first. Each uses its zine artwork,
+    // Essays from the writing page, newest first. `x` is where each was first published,
+    // the essay page's own "Originally published on X Articles" link. Each uses its zine artwork,
     // assets/book/<slug>-zine-cover.webp and -back.webp. Set `cover: null` on an essay to
     // generate a cover instead, printed like a two-colour riso: the title set large and a
     // halftone of the essay's hero image. `paper` is the stock, `ink` the main ink, `accent`
     // the second ink (the colours also style the back if its artwork is missing).
     const ESSAYS = [
       { slug: 'the-trillion-dollar-super-app-is-finally-coming', title: 'The Trillion-dollar Super App is Finally Coming', date: 'June 23, 2026',
+        x: 'https://x.com/i/article/2069434429991227528',
         summary: 'Why AI workspaces are finally poised to become the West’s true super apps.', paper: '#1f2b3c', ink: '#ece3cf', accent: '#e8664f', pages: 0.3, focus: 0.5 },
       { slug: 'doubling-my-life-at-36', title: 'Doubling My Life at 36', date: 'June 5, 2026',
+        x: 'https://x.com/thatguybg/status/2063021946996961452',
         summary: 'A birthday reflection on AI, music, code, videos, and making things.', paper: '#22372e', ink: '#efe6d2', accent: '#e8b54a', pages: 0.24, focus: 0.5 },
       { slug: 'how-i-vibe-coded-a-150k-landing-page', title: 'How I vibe coded a $150K landing page', date: 'May 11, 2026',
+        x: 'https://x.com/thatguybg/status/2053901759198925235',
         summary: 'How a weekend with AI beat a six-month, $150K agency project.', paper: '#561e1b', ink: '#f0e4cf', accent: '#f08a3c', pages: 0.26, focus: 0.5 },
       { slug: 'the-four-micro-revolutions-of-the-intelligence-revolution', title: 'The Four Micro-Revolutions of the Intelligence Revolution', date: 'May 5, 2026',
+        x: 'https://x.com/thatguybg/status/2051714355398602957',
         summary: 'A map of chat, agents, context, and the platform layer ahead.', paper: '#1c1c1f', ink: '#e9e2d2', accent: '#d9577f', pages: 0.34, focus: 0.5 },
       { slug: 'the-last-job-for-mankind-context-farming', title: 'The Last Job for Mankind: Context Farming', date: 'April 24, 2026',
+        x: 'https://x.com/thatguybg/status/2047758799088308720',
         summary: 'Why company brains and context farmers may define the next era of work.', paper: '#3a2e20', ink: '#efe2c6', accent: '#a9c86f', pages: 0.28, focus: 0.5 },
       { slug: 'how-i-became-technical-af', title: 'How I became technical AF', date: 'April 10, 2026',
+        x: 'https://x.com/thatguybg/status/2042660471988457688',
         summary: 'How nontechnical founders can use agents to ship real software.', paper: '#272b30', ink: '#ece6da', accent: '#ff7a3c', pages: 0.22, focus: 0.5 },
     ].map((e) => ({
       // Every essay now has its own zine cover and back; the generated cover is the fallback.
@@ -960,7 +967,8 @@
           const sctx = small.getContext('2d', { willReadFrequently: true });
           sctx.drawImage(img, 0, 0, MAP_W, MAP_H);
           const cloth = clothColour(sctx, MAP_W, MAP_H);
-          const post = info.href ? { href: info.href } : (POSTS[info.slug] || {});
+          // Essays link to their X article; annual reflections to their Instagram post.
+          const post = info.href ? { href: info.href, url: info.x, source: 'X', date: info.date } : { source: 'Instagram', ...POSTS[info.slug] };
 
           const spineArt = drawSpine(info, cloth, thickness, post.note);
           const backArt = covers[i].back ? mirrored(covers[i].back) : drawBack(info, cloth, post.note);
@@ -1120,7 +1128,7 @@
         const book = books[active];
         readBtn.textContent = book.post.comingSoon ? '+ Coming soon +' : '+ Read +';
         postLink.hidden = !book.post.url;
-        if (book.post.url) postLink.href = book.post.url;
+        if (book.post.url) { postLink.href = book.post.url; postLink.textContent = `+ ${book.post.source} +`; }
         backBtn.hidden = !reading;
         hint.hidden = !!reading;
         titles.classList.toggle('away', !!reading);
@@ -1153,17 +1161,16 @@
         if (post.url) {
           const link = document.createElement('a');
           link.href = post.url; link.target = '_blank'; link.rel = 'noopener';
-          link.textContent = 'Instagram';
+          link.textContent = post.source;
           meta.appendChild(link);
         }
         (post.text || '').split(/\n{2,}/).filter(Boolean).forEach((para) => add('p', '', para));
         if (post.href) {
           // An essay: its text comes from its own page, so there's only one copy of it.
-          meta.textContent = `${book.info.date} · `;
           const link = document.createElement('a');
           link.href = post.href;
           link.textContent = 'Open as a page';
-          meta.appendChild(link);
+          meta.append(' · ', link);
           const body = add('div', 'essay-body');
           essayBody(post.href).then((nodes) => {
             if (reading === book) body.replaceChildren(...nodes);
