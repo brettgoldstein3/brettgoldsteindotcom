@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Bookshelf — Brett Goldstein</title>
-  <meta name="description" content="Brett Goldstein's birthday reflections, one for each year, bound as books.">
+  <meta name="description" content="Brett Goldstein's essays and annual reflections, bound as books.">
   <link rel="canonical" href="https://brettgoldstein.com/bookshelf/">
   <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,12 +32,13 @@
     #stage canvas.dragging { cursor: grabbing; }
     /* Flat covers: shown only if the 3D shelf can't start (no WebGL, or an error). */
     #flat {
-      position: fixed; inset: 4rem 1.4rem;
+      position: fixed; inset: 4rem 0 3rem; padding: 0 1.4rem;
       display: flex; flex-wrap: wrap; gap: 1rem;
-      justify-content: center; align-content: center;
+      justify-content: center; align-content: safe center;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
       transition: opacity 0.6s ease;
     }
-    #flat img { height: 26vh; width: auto; max-width: 40vw; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); }
+    #flat img { display: block; height: min(26vh, 15rem); width: auto; max-width: 40vw; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); }
     #flat.hidden { opacity: 0; pointer-events: none; }
     /* Shown while the shelf is being built */
     #loading {
@@ -49,7 +50,7 @@
     .bar {
       position: fixed; left: 0; right: 0;
       display: flex; justify-content: space-between; align-items: baseline;
-      padding: 1.1rem 1.4rem;
+      padding: 1.1rem max(1.4rem, env(safe-area-inset-right)) 1.1rem max(1.4rem, env(safe-area-inset-left));
       font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
       pointer-events: none;
     }
@@ -59,31 +60,35 @@
       background: none; border: 0; cursor: pointer;
       font: inherit; letter-spacing: inherit; text-transform: inherit;
     }
-    .top { top: 0; }
-    .bottom { bottom: 0; transition: opacity 0.3s ease; }
+    /* Clear of the notch and the home indicator on phones */
+    .top { top: 0; padding-top: max(1.1rem, env(safe-area-inset-top)); }
+    .bottom { bottom: 0; padding-bottom: max(1.1rem, env(safe-area-inset-bottom)); transition: opacity 0.3s ease; }
     body.reading .bottom { opacity: 0; }
     .dim { opacity: 0.55; }
     h1 {
       font-family: Fraunces, Georgia, serif; font-weight: 500;
       font-size: 0.95rem; letter-spacing: 0; text-transform: none;
     }
-    /* Titles run along the top; the front-facing book's title is centred and lit. */
+    /* Titles run under the books; the front-facing book's title is centred and lit.
+       Its top is set by script to sit just below the books. */
     #titles {
-      position: fixed; top: 2.6rem; left: 0; right: 0;
+      position: fixed; top: 80vh; left: 0; right: 0;
       overflow: hidden; pointer-events: none;
       opacity: 0; transition: opacity 0.5s ease;
     }
     #titles.ready { opacity: 1; }
     #titles.ready.away { opacity: 0; }
     #titles .track {
-      display: flex; gap: clamp(1.6rem, 4vw, 3.4rem); width: max-content;
+      display: flex; align-items: flex-start; gap: clamp(1.6rem, 4vw, 3.4rem); width: max-content;
       transition: transform 0.7s cubic-bezier(0.22, 0.8, 0.24, 1);
     }
     #titles .t {
       background: none; border: 0; padding: 0; cursor: pointer; pointer-events: auto;
-      color: inherit; white-space: nowrap;
+      color: inherit; text-align: center;
+      /* Long essay titles wrap instead of running off the screen. */
+      width: max-content; max-width: min(86vw, 15em);
       font-family: Fraunces, Georgia, serif; font-weight: 400; letter-spacing: -0.02em;
-      font-size: clamp(1.7rem, 4.6vw, 4.2rem); line-height: 1.1;
+      font-size: clamp(1.25rem, 2.6vw, 2.3rem); line-height: 1.12;
       opacity: 0.32; transition: opacity 0.5s ease;
     }
     #titles .t.on { opacity: 1; }
@@ -136,34 +141,77 @@
       font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
     }
     #panel p { font-size: 1.02rem; line-height: 1.62; margin-bottom: 1em; white-space: pre-line; color: #e2d8c3; }
+    /* An essay's own markup, set in the reading panel */
+    #panel .essay-body p { white-space: normal; }
+    #panel .essay-body a { color: inherit; text-underline-offset: 0.18em; }
+    #panel .essay-body h2 { font-size: 1.25rem; font-weight: 500; line-height: 1.25; margin: 2.2em 0 0.7em; }
+    #panel .essay-body h3 { font-size: 1.05rem; font-weight: 500; margin: 1.8em 0 0.6em; }
+    #panel .essay-body figure { margin: 1.6em 0; }
+    #panel .essay-body img, #panel .essay-body video {
+      display: block; width: 100%; height: auto; border-radius: 2px; background: rgba(239, 230, 210, 0.06);
+    }
+    #panel .essay-body figcaption {
+      margin-top: 0.6em; opacity: 0.55;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.68rem; letter-spacing: 0.08em;
+    }
+    #panel .essay-body ul, #panel .essay-body ol { margin: 0 0 1em 1.3em; color: #e2d8c3; line-height: 1.62; }
+    #panel .essay-body li { margin-bottom: 0.35em; }
+    #panel .essay-body blockquote {
+      margin: 1.4em 0; padding-left: 1.1em; border-left: 2px solid rgba(239, 230, 210, 0.35); font-style: italic;
+    }
     @media (max-aspect-ratio: 1/1) {
-      #panel {
-        top: 50%; left: 0; width: auto;
-        padding: 2.2rem 1.4rem 3rem;
-        background: linear-gradient(to bottom, rgba(11, 10, 9, 0), rgba(11, 10, 9, 0.94) 2.2rem);
+      /* Tall screens: the text starts under the book and scrolls up over it, so a long essay
+         gets the whole screen. Only the text takes touches; above it, the book still spins. */
+      #panel, #panel.open {
+        top: 0; left: 0; width: auto; padding: 0;
+        pointer-events: none;
+      }
+      #panel.open .inner { pointer-events: auto; }
+      /* Keep "Back to shelf" above the text as it scrolls up. */
+      body.reading .top { z-index: 2; background: linear-gradient(to bottom, #0b0a09 55%, rgba(11, 10, 9, 0)); }
+      #panel .inner {
+        max-width: none; min-height: 52svh; margin-top: 48svh;
+        padding: 2.4rem 1.4rem max(3rem, env(safe-area-inset-bottom));
+        background: linear-gradient(to bottom, rgba(11, 10, 9, 0), #0b0a09 2.4rem);
       }
       #panel .note { font-size: 3rem; }
       #panel h2 { font-size: 1.4rem; }
     }
+    /* Section switch: the kind of book on the shelf, large across the top */
+    #sections {
+      position: fixed; top: calc(3.4rem + env(safe-area-inset-top)); left: 0; right: 0;
+      display: flex; justify-content: center; gap: clamp(1.2rem, 3.5vw, 2.6rem);
+      opacity: 0; transition: opacity 0.5s ease;
+    }
+    #sections.ready { opacity: 1; }
+    body.reading #sections { opacity: 0; pointer-events: none; }
+    #sections button {
+      background: none; border: 0; padding: 0; cursor: pointer; color: inherit; white-space: nowrap;
+      font-family: Fraunces, Georgia, serif; font-weight: 400; letter-spacing: -0.02em;
+      font-size: clamp(1.5rem, 3.8vw, 3.4rem); line-height: 1.1;
+      opacity: 0.28; transition: opacity 0.3s ease;
+    }
+    #sections button.on { opacity: 1; }
+    #sections button:hover { opacity: 0.7; }
+    #sections button.on:hover { opacity: 1; }
+    @media (max-width: 360px) {
+      #sections { gap: 1rem; }
+      #sections button { font-size: 1.3rem; }
+    }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <div id="stage"></div>
   <div id="loading">Loading</div>
-  <div id="flat" class="hidden">
-    <img src="../assets/book/unrest-cover.webp" alt="The Unrest of My Life by Brett Goldstein">
-    <img src="../assets/book/boundless-creation-cover.webp" alt="Boundless Creation by Brett Goldstein">
-    <img src="../assets/book/as-many-hours-cover.webp" alt="As Many Hours as Possible by Brett Goldstein">
-    <img src="../assets/book/144-days-cover.webp" alt="144 Days by Brett Goldstein">
-    <img src="../assets/book/buckle-up-cover.webp" alt="Buckle Up, Don't Worry by Brett Goldstein">
-    <img src="../assets/book/everything-happens-cover.webp" alt="Everything Happens So Much by Brett Goldstein">
-  </div>
+  <div id="flat" class="hidden"></div>
 
   <div class="bar top">
     <a href="../">Brett Goldstein</a>
     <button id="back" hidden>Back to shelf</button>
   </div>
+  <nav id="sections" aria-label="Sections"></nav>
   <nav id="titles" aria-label="Bookshelf"><div class="track"></div></nav>
   <div id="actions">
     <button id="read" type="button">+ Read +</button>
@@ -171,16 +219,43 @@
   </div>
   <article id="panel" aria-live="polite"><div class="inner"></div></article>
   <div class="bar bottom">
-    <h1>Birthday reflections</h1>
+    <h1 class="sr">Bookshelf</h1>
     <span class="dim" id="hint">← → to browse</span>
   </div>
 
   <script>
-    // If the 3D shelf hasn't started after a while (say the 3D library failed to load), show the flat covers.
-    window.shelfFallback = setTimeout(function () {
+    // Flat covers, for when the 3D shelf can't start (no WebGL, or the 3D library failed to load).
+    // Built only when needed, so a working shelf never downloads them.
+    window.showFlat = function () {
+      var flat = document.getElementById('flat');
       document.getElementById('loading').classList.add('done');
-      document.getElementById('flat').classList.remove('hidden');
-    }, 15000);
+      if (!flat.children.length) {
+        [
+          ['the-trillion-dollar-super-app-is-finally-coming', 'The Trillion-dollar Super App is Finally Coming', true],
+          ['doubling-my-life-at-36', 'Doubling My Life at 36', true],
+          ['how-i-vibe-coded-a-150k-landing-page', 'How I vibe coded a $150K landing page', true],
+          ['the-four-micro-revolutions-of-the-intelligence-revolution', 'The Four Micro-Revolutions of the Intelligence Revolution', true],
+          ['the-last-job-for-mankind-context-farming', 'The Last Job for Mankind: Context Farming', true],
+          ['how-i-became-technical-af', 'How I became technical AF', true],
+          ['unrest', 'The Unrest of My Life'],
+          ['boundless-creation', 'Boundless Creation'],
+          ['as-many-hours', 'As Many Hours as Possible'],
+          ['144-days', '144 Days'],
+          ['buckle-up', 'Buckle Up, Don’t Worry'],
+          ['everything-happens', 'Everything Happens So Much'],
+        ].forEach(function (b) {
+          var img = document.createElement('img');
+          img.src = '../assets/book/' + b[0] + '-zine-cover.webp';
+          img.alt = b[1] + ' by Brett Goldstein';
+          img.loading = 'lazy';
+          var item = img;
+          if (b[2]) { item = document.createElement('a'); item.href = '../writing/' + b[0] + '/'; item.appendChild(img); }
+          flat.appendChild(item);
+        });
+      }
+      flat.classList.remove('hidden');
+    };
+    window.shelfFallback = setTimeout(window.showFlat, 15000);
   </script>
   <script type="importmap">
     {
@@ -278,10 +353,16 @@
     };
     // A magazine: the zine's stapled shape on bright, coated gloss stock.
     STYLES.magazine = { ...STYLES.zine, tooth: false, gloss: true, lift: 0.02, pageTint: [244, 242, 238] };
+    // Both sections use DEFAULT_STYLE; ?style= swaps it for one visit.
     const DEFAULT_STYLE = 'zine';
-    const STYLE_NAME = new URLSearchParams(location.search).get('style');
-    const S = STYLES[Object.hasOwn(STYLES, STYLE_NAME) ? STYLE_NAME : DEFAULT_STYLE];
-    const BOARD = S.board, SQUARE = S.square, BULGE = S.bulge;
+    const params = new URLSearchParams(location.search);
+    const SHELF_STYLE = Object.hasOwn(STYLES, params.get('style')) ? params.get('style') : DEFAULT_STYLE;
+    // The style being built or shown. The geometry and texture helpers below read these.
+    let S, BOARD, SQUARE, BULGE;
+    function useStyle(name) {
+      S = STYLES[name];
+      BOARD = S.board; SQUARE = S.square; BULGE = S.bulge;
+    }
     const SPINE_OUT = Math.PI / 2;    // rotation that turns a book's spine to the camera; 0 shows its cover
     // Phones get lighter surface maps: less memory, and much less work at load.
     const SMALL = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 700;
@@ -305,6 +386,37 @@
     const lerp = (a, b, t) => a + (b - a) * t;
     const hash = (n) => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
     const luma = (r, g, b) => (r * 0.3 + g * 0.59 + b * 0.11) / 255;
+
+    // Essays from the writing page, newest first. Each uses its zine artwork,
+    // assets/book/<slug>-zine-cover.webp and -back.webp. Set `cover: null` on an essay to
+    // generate a cover instead, printed like a two-colour riso: the title set large and a
+    // halftone of the essay's hero image. `paper` is the stock, `ink` the main ink, `accent`
+    // the second ink (the colours also style the back if its artwork is missing).
+    const ESSAYS = [
+      { slug: 'the-trillion-dollar-super-app-is-finally-coming', title: 'The Trillion-dollar Super App is Finally Coming', date: 'June 23, 2026',
+        summary: 'Why AI workspaces are finally poised to become the West’s true super apps.', paper: '#1f2b3c', ink: '#ece3cf', accent: '#e8664f', pages: 0.3, focus: 0.5 },
+      { slug: 'doubling-my-life-at-36', title: 'Doubling My Life at 36', date: 'June 5, 2026',
+        summary: 'A birthday reflection on AI, music, code, videos, and making things.', paper: '#22372e', ink: '#efe6d2', accent: '#e8b54a', pages: 0.24, focus: 0.5 },
+      { slug: 'how-i-vibe-coded-a-150k-landing-page', title: 'How I vibe coded a $150K landing page', date: 'May 11, 2026',
+        summary: 'How a weekend with AI beat a six-month, $150K agency project.', paper: '#561e1b', ink: '#f0e4cf', accent: '#f08a3c', pages: 0.26, focus: 0.5 },
+      { slug: 'the-four-micro-revolutions-of-the-intelligence-revolution', title: 'The Four Micro-Revolutions of the Intelligence Revolution', date: 'May 5, 2026',
+        summary: 'A map of chat, agents, context, and the platform layer ahead.', paper: '#1c1c1f', ink: '#e9e2d2', accent: '#d9577f', pages: 0.34, focus: 0.5 },
+      { slug: 'the-last-job-for-mankind-context-farming', title: 'The Last Job for Mankind: Context Farming', date: 'April 24, 2026',
+        summary: 'Why company brains and context farmers may define the next era of work.', paper: '#3a2e20', ink: '#efe2c6', accent: '#a9c86f', pages: 0.28, focus: 0.5 },
+      { slug: 'how-i-became-technical-af', title: 'How I became technical AF', date: 'April 10, 2026',
+        summary: 'How nontechnical founders can use agents to ship real software.', paper: '#272b30', ink: '#ece6da', accent: '#ff7a3c', pages: 0.22, focus: 0.5 },
+    ].map((e) => ({
+      // Every essay now has its own zine cover and back; the generated cover is the fallback.
+      cover: `${e.slug}-zine`,
+      ...e, type: 'serif', href: `../writing/${e.slug}/`, hero: `../assets/articles/${e.slug}/media-1.jpg`,
+    }));
+
+    // The shelf has two sections; ?section= picks which one opens.
+    const SECTIONS = [
+      // `scale` sizes the books: the annual reflections are smaller, pocket-sized zines.
+      { id: 'essays', label: 'Essays', style: SHELF_STYLE, list: ESSAYS, active: 0, scale: 1 },
+      { id: 'reflections', label: 'Annual Reflections', style: SHELF_STYLE, list: BOOKS, active: 0, scale: 0.84 },
+    ];
 
     function loadImage(src) {
       return new Promise((resolve, reject) => {
@@ -512,6 +624,129 @@
       return c;
     }
 
+    // Back-cover artwork, flipped to suit the back board, which shares the front board's UVs.
+    function mirrored(img) {
+      const c = canvasOf(MAP_W, MAP_H);
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.setTransform(-1, 0, 0, 1, MAP_W, 0);
+      ctx.drawImage(img, 0, 0, MAP_W, MAP_H);
+      return c;
+    }
+
+    // Break text into lines no wider than `max` at the context's current font.
+    function wrap(ctx, text, max) {
+      const lines = [];
+      let line = '';
+      for (const word of text.split(' ')) {
+        const next = line ? `${line} ${word}` : word;
+        if (line && ctx.measureText(next).width > max) { lines.push(line); line = word; } else line = next;
+      }
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    // Print `src` (a crop of the hero image) as halftone dots into the given box: the second
+    // ink carries the whole image, the main ink only the strongest tones, slightly out of
+    // register. On dark paper the inks are light, so they print the image's lights instead.
+    function halftone(ctx, src, sx, sy, sw, sh, x, y, w, h, essay) {
+      const CELL = 11;
+      const cols = Math.ceil(w / CELL), rows = Math.ceil(h / CELL);
+      const sample = canvasOf(cols, rows);
+      const sctx = sample.getContext('2d', { willReadFrequently: true });
+      sctx.drawImage(src, sx, sy, sw, sh, 0, 0, cols, rows);
+      const px = sctx.getImageData(0, 0, cols, rows).data;
+      // Stretch each image's tones to the full range, so pale drawings still print with weight.
+      const raw = new Float32Array(cols * rows);
+      for (let i = 0; i < raw.length; i++) raw[i] = 1 - luma(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]);
+      const sorted = Float32Array.from(raw).sort();
+      const lo = sorted[Math.floor(sorted.length * 0.04)], hi = sorted[Math.floor(sorted.length * 0.97)];
+      const onDark = luma(...hexRGB(essay.paper)) < 0.35;
+      const dark = (i) => {
+        const v = Math.min(1, Math.max(0, (raw[i] - lo) / Math.max(0.05, hi - lo)));
+        return onDark ? 1 - v : v;
+      };
+      ctx.save();
+      ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+      ctx.globalCompositeOperation = onDark ? 'screen' : 'multiply';
+      const layer = (colour, amount, dx, dy, shift) => {
+        ctx.fillStyle = colour;
+        for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
+          // Fade toward the panel's edges, so the image floats on the paper like the zines' art.
+          const edge = Math.min(q / cols, 1 - q / cols, (r / rows) * 1.5, (1 - r / rows) * 1.5);
+          const a = amount(dark(r * cols + q)) * smoothstep(0, 0.2, edge);
+          if (a < 0.04) continue;
+          const cx = x + (q + 0.5 + (shift && r % 2 ? 0.5 : 0)) * CELL + dx, cy = y + (r + 0.5) * CELL + dy;
+          ctx.beginPath(); ctx.arc(cx, cy, Math.min(0.72, a * 0.72) * CELL, 0, Math.PI * 2); ctx.fill();
+        }
+      };
+      layer(essay.accent, (d) => Math.pow(d, 0.9) * 0.95, 3, -2, true);
+      layer(essay.ink, (d) => smoothstep(0.38, 1, d), 0, 0, false);
+      ctx.restore();
+    }
+
+    const hexRGB = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+
+    // Uneven ink and paper fleck, so the cover reads as printed stock rather than a flat fill.
+    function speckle(ctx, w, h, colour, seed) {
+      ctx.save();
+      ctx.fillStyle = colour;
+      for (let i = 0; i < 2600; i++) {
+        ctx.globalAlpha = 0.05 + 0.18 * hash(seed + i * 3.1);
+        const r = 0.6 + 1.6 * hash(seed + i * 7.7);
+        ctx.fillRect(hash(seed + i * 1.3) * w, hash(seed + i * 5.9) * h, r, r);
+      }
+      ctx.restore();
+    }
+
+    // A cover for an essay, laid out on a 1024 × 1536 page.
+    function drawEssayCover(essay, hero, number) {
+      const c = canvasOf(1024, 1536);
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      const M = 92;
+      ctx.fillStyle = essay.paper;
+      ctx.fillRect(0, 0, c.width, c.height);
+      speckle(ctx, c.width, c.height, essay.ink, number * 97);
+
+      ctx.fillStyle = essay.ink;
+      ctx.textBaseline = 'alphabetic';
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '5px';
+      ctx.font = `500 22px ${MONO}`;
+      ctx.fillText('AN ESSAY', M, M + 20);
+      ctx.textAlign = 'right';
+      ctx.fillText(`NO. ${String(number).padStart(2, '0')}`, c.width - M, M + 20);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = essay.accent;
+      ctx.fillRect(M, M + 44, 64, 6);                      // a short bar in the second ink
+      ctx.fillStyle = essay.ink;
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '-1px';
+
+      // Title: as large as fits in four lines.
+      let size = 100, lines;
+      do {
+        ctx.font = `400 ${size}px "Source Serif 4", Georgia, serif`;
+        lines = wrap(ctx, essay.title, c.width - M * 2);
+        size -= 4;
+      } while (lines.length > 4 && size > 50);
+      const lead = (size + 4) * 1.08;
+      lines.forEach((l, i) => ctx.fillText(l, M, M + 150 + lead * (i + 0.8)));
+
+      // Halftone panel from the middle of the hero banner.
+      const px = M, pw = c.width - M * 2, ph = Math.round(pw / 1.5), py = c.height - M - 90 - ph;
+      if (hero) {
+        const sh = hero.height, sw = Math.min(hero.width, sh * 1.5);
+        const sx = Math.max(0, Math.min(hero.width - sw, hero.width * essay.focus - sw / 2));
+        halftone(ctx, hero, sx, 0, sw, sh, px, py, pw, ph, essay);
+      }
+
+      // Author and date at the foot.
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '5px';
+      ctx.font = `500 22px ${MONO}`;
+      ctx.fillText(AUTHOR.toUpperCase(), M, c.height - M);
+      ctx.textAlign = 'right';
+      ctx.fillText(essay.date.toUpperCase(), c.width - M, c.height - M);
+      return c;
+    }
+
     const plain = (title) => title.replaceAll('*', '');
 
     // Set UVs by projecting flat along one axis, so a texture lies across the whole part.
@@ -606,15 +841,39 @@
     }
 
     async function main() {
-      // Paper styles (essay, zine, magazine) use a book's printed-paper cover where it has one.
-      const coverOf = (b) => (S.paper && b.paperCover) || b.slug;
-      const images = await Promise.all(BOOKS.map((b) => loadImage(`../assets/book/${coverOf(b)}-cover.webp`)));
-      await Promise.race([
-        Promise.all(['500 60px Fraunces', '400 60px "Source Serif 4"', 'italic 400 60px "Source Serif 4"', '500 60px Inter', '600 60px Inter']
+      const fontsReady = Promise.race([
+        Promise.all(['400 60px Fraunces', '500 60px Fraunces', '400 60px "Source Serif 4"', 'italic 400 60px "Source Serif 4"', '500 60px Inter', '600 60px Inter']
           .map((f) => document.fonts.load(f))),
         new Promise((r) => setTimeout(r, 1500)),
       ]).catch(() => {});
+      const asked = SECTIONS.find((sec) => sec.id === params.get('section'));
+      let section = asked || SECTIONS[0];
 
+      // Cover art for a section: image files, or generated covers for essays.
+      async function coversFor(sec) {
+        useStyle(sec.style);
+        if (sec.list === ESSAYS) {
+          const heroes = await Promise.all(ESSAYS.map((e) => e.cover
+            ? loadImage(`../assets/book/${e.cover}-cover.webp`)
+            : loadImage(e.hero).catch(() => null)));
+          const backs = await Promise.all(ESSAYS.map((e) => e.cover
+            ? loadImage(`../assets/book/${e.cover}-back.webp`).catch(() => null) : null));
+          await fontsReady;
+          return ESSAYS.map((e, i) => ({
+            front: e.cover ? heroes[i] : drawEssayCover(e, heroes[i], ESSAYS.length - i),
+            back: backs[i],
+          }));
+        }
+        // Paper styles (essay, zine, magazine) use a book's printed-paper cover where it has one.
+        const coverOf = (b) => (S.paper && b.paperCover) || b.slug;
+        const images = await Promise.all(BOOKS.map((b) => loadImage(`../assets/book/${coverOf(b)}-cover.webp`)));
+        // Printed-paper covers have matching back covers; a missing one falls back to a drawn back.
+        const backs = await Promise.all(BOOKS.map((b) => S.paper && b.paperCover
+          ? loadImage(`../assets/book/${b.paperCover}-back.webp`).catch(() => null) : null));
+        await fontsReady;
+        return images.map((front, i) => ({ front, back: backs[i] }));
+      }
+      const firstCovers = await coversFor(section);
       const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
       // Neutral tone mapping keeps cover colours true; filmic curves washed out the lighter cloths.
       renderer.toneMapping = THREE.NeutralToneMapping;
@@ -637,7 +896,9 @@
       const key = new THREE.DirectionalLight(0xfff1dc, 1.6);
       key.position.set(-4, 5, 7);
       scene.add(key);
-      const glint = new THREE.DirectionalLight(0xffe2b0, S.gloss ? 0.15 : 1.3);   // gloss catches it far more, so much less of it
+      const glint = new THREE.DirectionalLight(0xffe2b0, 1.3);
+      // Gloss catches the pointer light far more, so a glossy section gets much less of it.
+      const glintFor = (style) => STYLES[style].gloss ? 0.15 : 1.3;
       scene.add(glint);
 
       const aniso = renderer.capabilities.getMaxAnisotropy();
@@ -671,68 +932,87 @@
         sheenColor: new THREE.Color(`rgb(${cloth.join(',')})`).lerp(new THREE.Color(0xffffff), 0.25),
       });
 
-      // Shared between all books
-      const boardGeo = boardGeometry();
-      const pagesMat = new THREE.MeshStandardMaterial({ map: pagesTexture(), roughness: 0.95 });
+      // Shared between all books of one style
+      const shared = {};
+      const sharedFor = (style) => shared[style] ||= {
+        boardGeo: boardGeometry(),
+        pagesMat: new THREE.MeshStandardMaterial({ map: pagesTexture(), roughness: 0.95 }),
+      };
       // A staple's crown, lying along the spine fold.
       const stapleGeo = new THREE.BoxGeometry(0.004, 0.2, 0.011);
       const stapleMat = new THREE.MeshStandardMaterial({ color: 0xc4c8cc, metalness: 1, roughness: 0.3 });
 
-      const books = [];
-      for (const [i, info] of BOOKS.entries()) {
-        await new Promise((r) => setTimeout(r));      // let the page breathe between books
-        const block = S.thickness(info.pages);       // page block thickness for this style
-        const thickness = block + BOARD * 2;
-        const img = images[i];
+      // Build a section's books, hidden below the shelf until the section is shown.
+      async function buildSection(sec, covers) {
+        useStyle(sec.style);
+        const { boardGeo, pagesMat } = sharedFor(sec.style);
+        const built = [];
+        const seed = SECTIONS.indexOf(sec) * 37;      // each section sits crooked in its own way
+        for (const [i, info] of sec.list.entries()) {
+          await new Promise((r) => setTimeout(r));      // let the page breathe between books
+          useStyle(sec.style);                          // another section may have been built meanwhile
+          const block = S.thickness(info.pages);       // page block thickness for this style
+          const thickness = block + BOARD * 2;
+          const img = covers[i].front;
 
-        // Work from a reduced copy of the art; the cover itself stays full resolution.
-        const small = canvasOf(MAP_W, MAP_H);
-        const sctx = small.getContext('2d', { willReadFrequently: true });
-        sctx.drawImage(img, 0, 0, MAP_W, MAP_H);
-        const cloth = clothColour(sctx, MAP_W, MAP_H);
-        const post = POSTS[info.slug] || {};
+          // Work from a reduced copy of the art; the cover itself stays full resolution.
+          const small = canvasOf(MAP_W, MAP_H);
+          const sctx = small.getContext('2d', { willReadFrequently: true });
+          sctx.drawImage(img, 0, 0, MAP_W, MAP_H);
+          const cloth = clothColour(sctx, MAP_W, MAP_H);
+          const post = info.href ? { href: info.href } : (POSTS[info.slug] || {});
 
-        const spineArt = drawSpine(info, cloth, thickness, post.note);
-        const backArt = drawBack(info, cloth, post.note);
-        const group = new THREE.Group();
-        const front = new THREE.Mesh(boardGeo, clothMaterial({ art: tex(img, true), surface: tex(surfaceMap(small, cloth, { groove: true })), cloth }));
-        const rear = new THREE.Mesh(boardGeo, clothMaterial({ art: tex(backArt, true), surface: tex(surfaceMap(backArt, cloth, { groove: true })), cloth }));
-        rear.position.z = -(block + BOARD) / 2;
-        const spine = new THREE.Mesh(spineGeometry(thickness), clothMaterial({ art: tex(spineArt, true), surface: tex(surfaceMap(spineArt, cloth)), cloth }));
-        const pages = new THREE.Mesh(pagesGeometry(block), pagesMat.clone());
-        // The front cover hinges at the spine, so it can spring open a little.
-        const hinge = new THREE.Group();
-        hinge.position.set(-W / 2, 0, (block + BOARD) / 2);
-        hinge.rotation.y = -(S.lift || 0) * (0.7 + 0.6 * hash(i + 11));
-        front.position.x = W / 2;
-        hinge.add(front);
-        group.add(hinge, rear, spine, pages);
-        const parts = [front, rear, spine, pages];
-        if (S.staples) {
-          // Two staples through the fold.
-          for (const y of [-H * 0.27, H * 0.27]) {
-            const staple = new THREE.Mesh(stapleGeo, stapleMat.clone());
-            staple.position.set(-W / 2 - BULGE - 0.0015, y, 0);
-            group.add(staple);
-            parts.push(staple);
+          const spineArt = drawSpine(info, cloth, thickness, post.note);
+          const backArt = covers[i].back ? mirrored(covers[i].back) : drawBack(info, cloth, post.note);
+          const group = new THREE.Group();
+          // Phones get a reduced cover too: twelve full-size covers is a lot of GPU memory.
+          const art = SMALL ? (() => { const c = canvasOf(768, 1152); c.getContext('2d').drawImage(img, 0, 0, 768, 1152); return c; })() : img;
+          const front = new THREE.Mesh(boardGeo, clothMaterial({ art: tex(art, true), surface: tex(surfaceMap(small, cloth, { groove: true })), cloth }));
+          const rear = new THREE.Mesh(boardGeo, clothMaterial({ art: tex(backArt, true), surface: tex(surfaceMap(backArt, cloth, { groove: true })), cloth }));
+          rear.position.z = -(block + BOARD) / 2;
+          const spine = new THREE.Mesh(spineGeometry(thickness), clothMaterial({ art: tex(spineArt, true), surface: tex(surfaceMap(spineArt, cloth)), cloth }));
+          const pages = new THREE.Mesh(pagesGeometry(block), pagesMat.clone());
+          // The front cover hinges at the spine, so it can spring open a little.
+          const hinge = new THREE.Group();
+          hinge.position.set(-W / 2, 0, (block + BOARD) / 2);
+          hinge.rotation.y = -(S.lift || 0) * (0.7 + 0.6 * hash(seed + i + 11));
+          front.position.x = W / 2;
+          hinge.add(front);
+          group.add(hinge, rear, spine, pages);
+          const parts = [front, rear, spine, pages];
+          if (S.staples) {
+            // Two staples through the fold.
+            for (const y of [-H * 0.27, H * 0.27]) {
+              const staple = new THREE.Mesh(stapleGeo, stapleMat.clone());
+              staple.position.set(-W / 2 - BULGE - 0.0015, y, 0);
+              group.add(staple);
+              parts.push(staple);
+            }
           }
+
+          const book = {
+            index: i, section: sec, info, post, thickness, group, rot: SPINE_OUT, tilt: 0, dim: { value: 0 }, from: 1,
+            // Zines sit slightly crooked, each in its own way.
+            roll: S.jitter ? (hash(seed + i + 3) - 0.5) * 0.07 : 0, rollNow: 0,
+            bob: S.jitter ? (hash(seed + i + 5) - 0.5) * 0.08 : 0,
+          };
+          for (const part of parts) dimmable(part.material, book.dim);
+          group.traverse((o) => { o.userData.book = book; });
+
+          // Wait out of sight below the shelf until the section is shown.
+          group.position.set(0, -H * 1.4 - i * 0.5, 0);
+          group.rotation.y = book.rot;
+          group.scale.setScalar(sec.scale);
+          group.visible = false;
+          scene.add(group);
+          built.push(book);
         }
-
-        const book = {
-          index: i, info, post, thickness, group, rot: SPINE_OUT, tilt: 0, dim: { value: 0 }, from: 1,
-          // Zines sit slightly crooked, each in its own way.
-          roll: S.jitter ? (hash(i + 3) - 0.5) * 0.07 : 0, rollNow: 0,
-          bob: S.jitter ? (hash(i + 5) - 0.5) * 0.08 : 0,
-        };
-        for (const part of parts) dimmable(part.material, book.dim);
-        group.traverse((o) => { o.userData.book = book; });
-
-        // Books rise into place one after another.
-        group.position.set(0, reduceMotion ? 0 : -H * 1.4 - i * 0.5, 0);
-        group.rotation.y = book.rot;
-        scene.add(group);
-        books.push(book);
+        return built;
       }
+      section.books = await buildSection(section, firstCovers);
+      let books = section.books;
+      glint.intensity = glintFor(section.style);
+      useStyle(section.style);
 
       // Where the camera sits, and where a book floats while its post is being read.
       const feature = new THREE.Vector3();
@@ -750,25 +1030,47 @@
         const narrow = camera.aspect < 1;
         // Room for the front-facing book plus a few spines or covers either side.
         // Tall screens keep the front book large and let the rest run off the edges.
-        viewDist = fit(H / 0.56, (narrow ? Math.min(S.viewWidth, W + 1.6) : S.viewWidth) / 0.92);
+        const viewWidth = STYLES[section.style].viewWidth;
+        viewDist = fit(H / 0.56, (narrow ? Math.min(viewWidth, W + 1.0) : viewWidth) / 0.92);
         // The read view shares the screen with its text: left half when wide, top half when tall.
         featureDist = Math.min(narrow ? fit(H / 0.4, (W + 0.9) / 0.88) : fit(H / 0.68, (W + 0.9) / 0.44), viewDist - 1.5);
-        // Look a little above the books so they sit below the title strip.
-        const look = new THREE.Vector3(0, H * 0.08, 0);
-        camera.position.set(0, H * 0.08, viewDist);
+        // Centre the front book and its title, as one block, in the space between the
+        // section names and the bottom bar, pulling back if the screen is too short for them.
+        const TITLE_GAP = narrow ? 22 : 26;             // between the book's foot and its title
+        const titleSize = Math.min(Math.max(20, 0.026 * w), 36.8);   // matches #titles .t font-size
+        const titleH = titleSize * 1.12 * (narrow ? 2 : 1.3);      // long titles wrap on phones
+        const room = {
+          top: document.getElementById('sections').getBoundingClientRect().bottom + (narrow ? 28 : 24),
+          bottom: document.querySelector('.bar.bottom').getBoundingClientRect().top - 8,
+        };
+        const space = room.bottom - room.top;
+        const bookRoom = Math.max(80, space - TITLE_GAP - titleH);
+        viewDist = Math.max(viewDist, (H * h) / (2 * tan * bookRoom));   // H: the largest books
+        const perPx = (2 * tan * viewDist) / h;          // world units per screen pixel at the books
+        const bookPx = (H * section.scale) / perPx;
+        const block = bookPx + TITLE_GAP + titleH;
+        const centre = room.top + Math.max(0, space - block) / 2 + bookPx / 2;
+        const lookY = (centre - h / 2) * perPx;          // aim above the books to set them lower, and vice versa
+        const look = new THREE.Vector3(0, lookY, 0);
+        camera.position.set(0, lookY, viewDist);
         camera.lookAt(look);
         camera.updateProjectionMatrix();
         camera.updateMatrixWorld();
         const viewH = 2 * tan * featureDist, viewW = viewH * camera.aspect;
         feature.set(0, look.y, viewDist - featureDist)
           .add(new THREE.Vector3(narrow ? 0 : -0.24 * viewW, narrow ? 0.21 * viewH : 0, 0));
+        titles.style.top = `${Math.round(centre + bookPx / 2 + TITLE_GAP)}px`;
       }
       addEventListener('resize', resize);
       resize();
+      document.fonts.ready.then(resize);     // the section names' height depends on their font
 
       // ---------- Title strip ----------
       const track = titles.firstElementChild;
-      const titleEls = books.map((book) => {
+      let titleEls = [];
+      function buildTitles() {
+      track.replaceChildren();
+      titleEls = books.map((book) => {
         const el = document.createElement('button');
         el.type = 'button';
         el.className = 't';
@@ -786,6 +1088,8 @@
         track.appendChild(el);
         return el;
       });
+      }
+      buildTitles();
       function layoutTitles() {
         const el = titleEls[active];
         track.style.transform = `translateX(${innerWidth / 2 - (el.offsetLeft + el.offsetWidth / 2)}px)`;
@@ -798,7 +1102,7 @@
       const REST = 0.35;                      // angle a book settles at while its post is read
       const raycaster = new THREE.Raycaster();
       const pointer = new THREE.Vector2();
-      let active = 0, hovered = null, reading = null, focus = 0;
+      let active = section.active, hovered = null, reading = null, focus = 0;
       let showActions = false, overActions = false;
       let spin = 0, velocity = 0, tilt = 0;
       let down = null, dragging = false, lastX = 0, lastY = 0;
@@ -827,7 +1131,7 @@
       function setActive(i) {
         i = Math.max(0, Math.min(books.length - 1, i));
         if (i === active) return;
-        active = i;
+        active = section.active = i;
         showActions = false; overActions = false;
         layoutTitles();
         updateUI();
@@ -853,7 +1157,56 @@
           meta.appendChild(link);
         }
         (post.text || '').split(/\n{2,}/).filter(Boolean).forEach((para) => add('p', '', para));
+        if (post.href) {
+          // An essay: its text comes from its own page, so there's only one copy of it.
+          meta.textContent = `${book.info.date} · `;
+          const link = document.createElement('a');
+          link.href = post.href;
+          link.textContent = 'Open as a page';
+          meta.appendChild(link);
+          const body = add('div', 'essay-body');
+          essayBody(post.href).then((nodes) => {
+            if (reading === book) body.replaceChildren(...nodes);
+          }).catch(() => {
+            const p = document.createElement('p');
+            p.textContent = 'This essay couldn’t be loaded here. ';
+            const a = document.createElement('a');
+            a.href = post.href; a.textContent = 'Read it on its page.';
+            p.appendChild(a);
+            if (reading === book) body.replaceChildren(p);
+          });
+        }
         panel.scrollTop = 0;
+      }
+
+      // Fetch an essay's page and take the body of the article, with its links and media
+      // pointed at the right files from here. Kept after the first fetch.
+      const essayCache = new Map();
+      function essayBody(href) {
+        if (!essayCache.has(href)) {
+          const base = new URL(href, location.href);
+          essayCache.set(href, fetch(base).then((r) => {
+            if (!r.ok) throw new Error(`${r.status} for ${base}`);
+            return r.text();
+          }).then((html) => {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const article = doc.querySelector('.article-body');
+            if (!article) throw new Error(`no article body in ${base}`);
+            article.querySelectorAll('script, style').forEach((el) => el.remove());
+            for (const [sel, attr] of [['img', 'src'], ['source', 'src'], ['video', 'poster'], ['a', 'href']]) {
+              article.querySelectorAll(`${sel}[${attr}]`).forEach((el) => {
+                el.setAttribute(attr, new URL(el.getAttribute(attr), base).href);
+              });
+            }
+            article.querySelectorAll('a[href]').forEach((a) => {
+              if (new URL(a.href).origin !== location.origin) { a.target = '_blank'; a.rel = 'noopener'; }
+            });
+            article.querySelectorAll('img').forEach((img) => { img.loading = 'lazy'; });
+            return article;
+          }).catch((err) => { essayCache.delete(href); throw err; }));
+        }
+        // Hand out a fresh copy each time, since the panel is rebuilt on every open.
+        return essayCache.get(href).then((article) => [...article.cloneNode(true).childNodes]);
       }
       function openRead() {
         const book = books[active];
@@ -870,7 +1223,70 @@
         reading.rot = Math.atan2(Math.sin(reading.rot), Math.cos(reading.rot));
         reading = null;
         panel.classList.remove('open');
+        panel.querySelectorAll('video, audio').forEach((m) => m.pause());
         updateUI();
+      }
+
+      // ---------- Sections ----------
+      const sectionNav = document.getElementById('sections');
+      const sectionBtns = SECTIONS.map((sec) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = sec.label;
+        b.addEventListener('click', () => showSection(sec));
+        sectionNav.appendChild(b);
+        return b;
+      });
+      function markSection() {
+        sectionBtns.forEach((b, i) => b.classList.toggle('on', SECTIONS[i] === section));
+      }
+      const SLIDE = 12;               // how far off to the side a section waits while another is shown
+      function raise(sec, dir) {
+        sec.books.forEach((book, i) => {
+          book.group.visible = true;
+          book.exit = undefined;
+          book.dim.value = 0;
+          if (reduceMotion) book.group.position.set(0, 0, 0);
+          // Switching sections: the shelf slides along, in the direction you're browsing.
+          else if (dir) book.group.position.set(dir * SLIDE + (i - sec.active) * FAN_STEP, 0, -FAN_BACK);
+          // First load: the books rise into place one after another.
+          else book.group.position.set(0, -H * 1.4 - i * 0.5, 0);
+        });
+      }
+      let switching = null;
+      async function showSection(sec, at) {
+        if (sec === section || switching) return;
+        closeRead();
+        switching = sec;
+        if (!sec.books) sec.books = await (sec.building ||= coversFor(sec).then((covers) => buildSection(sec, covers)));
+        switching = null;
+        const dir = Math.sign(SECTIONS.indexOf(sec) - SECTIONS.indexOf(section));
+        // The shelf being left slides off the other way.
+        for (const book of section.books) book.exit = book.group.position.x - dir * SLIDE;
+        section = sec;
+        useStyle(sec.style);
+        books = sec.books;
+        if (at !== undefined) sec.active = at;
+        active = sec.active;
+        hovered = null; showActions = false; overActions = false;
+        glint.intensity = glintFor(sec.style);
+        raise(sec, dir);
+        buildTitles();
+        layoutTitles();
+        markSection();
+        resize();
+        updateUI();
+        const url = new URL(location.href);
+        url.searchParams.set('section', sec.id);
+        history.replaceState(null, '', url);
+      }
+
+      // Browse one book along; past either end of a section, carry on into the next one.
+      function step(dir) {
+        const next = active + dir;
+        if (next >= 0 && next < books.length) return setActive(next);
+        const neighbour = SECTIONS[SECTIONS.indexOf(section) + dir];
+        if (neighbour) showSection(neighbour, dir > 0 ? 0 : neighbour.list.length - 1);
       }
 
       // ---------- Input ----------
@@ -898,7 +1314,7 @@
         const wasClick = down && Math.hypot(dx, e.clientY - down.y) < 6;
         if (dragging) { dragging = false; canvas.classList.remove('dragging'); }
         if (down && !reading && !wasClick && Math.abs(dx) > 40) {
-          setActive(active + (dx < 0 ? 1 : -1));      // swipe through the row
+          step(dx < 0 ? 1 : -1);      // swipe through the row
         } else if (wasClick) {
           const book = down.book;
           if (reading) { if (book !== reading) closeRead(); }
@@ -922,7 +1338,7 @@
         if (performance.now() < wheelLock) return;
         wheelSum += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
         if (Math.abs(wheelSum) > 50) {
-          setActive(active + Math.sign(wheelSum));
+          step(Math.sign(wheelSum));
           wheelSum = 0;
           wheelLock = performance.now() + 380;
         }
@@ -939,8 +1355,8 @@
         if (e.key === 'Escape') closeRead();
         else if (onControl && (e.key === 'Enter' || e.key === ' ')) return;
         else if (reading) return;
-        else if (e.key === 'ArrowRight') setActive(active + 1);
-        else if (e.key === 'ArrowLeft') setActive(active - 1);
+        else if (e.key === 'ArrowRight') step(1);
+        else if (e.key === 'ArrowLeft') step(-1);
         else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRead(); }
       });
       backBtn.addEventListener('click', closeRead);
@@ -959,11 +1375,11 @@
       const RACK = -0.06;             // everything leans back slightly, as if propped on a ledge
       let slots = [];
       function layoutRow() {
-        if (S.layout === 'fan') {
+        if (STYLES[section.style].layout === 'fan') {
           const half = Math.cos(FAN_TURN) * W / 2;      // half the width a turned cover takes up
           slots = books.map((book, i) => {
             const d = i - active;
-            return d === 0 ? 0 : Math.sign(d) * (W / 2 + FAN_FIRST + half + (Math.abs(d) - 1) * FAN_STEP);
+            return section.scale * (d === 0 ? 0 : Math.sign(d) * (W / 2 + FAN_FIRST + half + (Math.abs(d) - 1) * FAN_STEP));
           });
           return;
         }
@@ -977,7 +1393,7 @@
           return x;
         });
         const centre = slots[active];
-        slots = slots.map((x) => x - centre);
+        slots = slots.map((x) => (x - centre) * section.scale);
       }
 
       function frame() {
@@ -992,6 +1408,20 @@
         let motion = Math.abs(sx - psx) + Math.abs(sy - psy) + Math.abs(velocity);
         layoutRow();
 
+        const st = STYLES[section.style];
+        // Books of the other section slide off to the side, then stop drawing.
+        for (const sec of SECTIONS) {
+          if (sec === section || !sec.books) continue;
+          for (const book of sec.books) {
+            if (!book.group.visible) continue;
+            target.copy(book.group.position).setX(book.exit ?? book.group.position.x);
+            if (book.exit === undefined) target.y = -H * 1.8;
+            motion += book.group.position.distanceTo(target);
+            book.group.position.lerp(target, ease(7));
+            book.dim.value += (1 - book.dim.value) * ease(5);
+            if (book.group.position.distanceTo(target) < 0.05 || book.dim.value > 0.98) book.group.visible = false;
+          }
+        }
         for (const book of books) {
           const isActive = book.index === active;
           let rot = SPINE_OUT, lean = 0;
@@ -1000,7 +1430,7 @@
             if (!reduceMotion) target.y += Math.sin(t * 0.9) * 0.03;
             rot = REST + spin + (reduceMotion ? 0 : Math.sin(t * 0.6) * 0.09) + sx * 0.22;
             lean = 0.05 + tilt + sy * 0.1;
-          } else if (S.layout === 'fan') {
+          } else if (st.layout === 'fan') {
             const d = book.index - active;
             target.set(slots[book.index], 0, isActive ? 0 : -FAN_BACK);
             lean = RACK;
@@ -1031,7 +1461,7 @@
           book.group.rotation.set(book.tilt, book.rot, book.rollNow);
 
           // Spines beside the front-facing book sit slightly in shadow; while reading, all but one vanish.
-          const goal = reading ? (book === reading ? 0 : 1) : (isActive ? 0 : S.dimSide);
+          const goal = reading ? (book === reading ? 0 : 1) : (isActive ? 0 : st.dimSide);
           motion += Math.abs(goal - book.dim.value);
           book.dim.value += (goal - book.dim.value) * ease(reading ? 14 : 6);
         }
@@ -1059,6 +1489,8 @@
         dirty = false;
         requestAnimationFrame(frame);
       }
+      raise(section);
+      markSection();
       layoutTitles();
       updateUI();
       frame();
@@ -1067,13 +1499,22 @@
       flat.classList.add('hidden');
       document.getElementById('loading').classList.add('done');
       titles.classList.add('ready');
+      sectionNav.classList.add('ready');
+
+      // Build the other sections quietly in the background, so switching is instant.
+      for (const sec of SECTIONS) {
+        if (sec.books || sec.building) continue;
+        sec.building = coversFor(sec).then((covers) => buildSection(sec, covers));
+        sec.books = await sec.building;
+        useStyle(section.style);
+      }
     }
 
     // If 3D can't run, fall back to the flat covers.
     main().catch((err) => {
       console.error('3D shelf failed to start; showing the flat covers.', err);
-      document.getElementById('loading').classList.add('done');
-      flat.classList.remove('hidden');
+      clearTimeout(window.shelfFallback);
+      window.showFlat();
     });
   </script>
   <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "076f8fc39fa743d79db3e3c47cc0ab3f"}'></script>
